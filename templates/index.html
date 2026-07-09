@@ -1,0 +1,240 @@
+{% extends 'layout.html' %}
+
+{% block title %}MindfulConnect - Mental Health Support Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-4">Nurture Your Mental Wellbeing</h1>
+                <p class="lead mb-4">MindfulConnect is a safe, anonymous community where you can track your mental health journey, connect with others, and access expert guidance.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4">Join Our Community</a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg px-4">Sign In</a>
+                    {% else %}
+                        <a href="{{ url_for('profile.dashboard') }}" class="btn btn-primary btn-lg px-4">Go to Dashboard</a>
+                        <a href="{{ url_for('forum.index') }}" class="btn btn-outline-primary btn-lg px-4">Community Forum</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <svg class="img-fluid" width="500" height="300" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="500" height="300" fill="#F8F9FB"></rect>
+                        <circle cx="250" cy="150" r="100" fill="#5B8EE6" opacity="0.2"></circle>
+                        <circle cx="250" cy="150" r="70" fill="#7BC9A3" opacity="0.3"></circle>
+                        <path d="M200,150 C200,122.4 222.4,100 250,100 C277.6,100 300,122.4 300,150" stroke="#5B8EE6" stroke-width="8" fill="none"></path>
+                        <circle cx="200" cy="120" r="15" fill="#FFB084"></circle>
+                        <circle cx="300" cy="120" r="15" fill="#FFB084"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <h2 class="text-center mb-5">How MindfulConnect Helps You</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-users fa-3x text-primary"></i>
+                        </div>
+                        <h3 class="card-title h4">Anonymous Community</h3>
+                        <p class="card-text">Connect with others in a safe, supportive environment where you can share experiences and find understanding.</p>
+                        <a href="{{ url_for('forum.index') }}" class="btn btn-outline-primary mt-3">Join Discussions</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-line fa-3x" style="color: var(--secondary);"></i>
+                        </div>
+                        <h3 class="card-title h4">Mood Tracking</h3>
+                        <p class="card-text">Monitor your emotional well-being over time with our intuitive mood tracker and journaling tools.</p>
+                        <a href="{{ url_for('profile.mood_tracker') }}" class="btn btn-outline-primary mt-3">Track Your Mood</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-md fa-3x" style="color: var(--accent);"></i>
+                        </div>
+                        <h3 class="card-title h4">Expert Guidance</h3>
+                        <p class="card-text">Access Q&A sessions with verified mental health professionals who provide valuable insights.</p>
+                        <a href="{{ url_for('experts.index') }}" class="btn btn-outline-primary mt-3">Meet Our Experts</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mindfulness Section -->
+    <section class="py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                <h2 class="mb-4">Practice Mindfulness Daily</h2>
+                <p class="mb-4">Our platform offers guided meditations, breathing exercises, and mindfulness practices to help you stay grounded and present.</p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Meditation timer with calming sounds</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Guided breathing exercises</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Simple mindfulness activities</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Gratitude practice guidance</li>
+                </ul>
+                <a href="{{ url_for('mindfulness.index') }}" class="btn btn-secondary">Explore Mindfulness Resources</a>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <div class="text-center">
+                    <svg class="img-fluid" width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="300" fill="#F8F9FB"></rect>
+                        <circle cx="200" cy="150" r="100" fill="#7BC9A3" opacity="0.2"></circle>
+                        <circle cx="200" cy="150" r="80" fill="#5B8EE6" opacity="0.1"></circle>
+                        <circle cx="200" cy="150" r="60" fill="#FFB084" opacity="0.1"></circle>
+                        <circle cx="200" cy="150" r="40" fill="#7BC9A3" opacity="0.2"></circle>
+                        <circle cx="200" cy="150" r="20" fill="#5B8EE6" opacity="0.3"></circle>
+                        <circle cx="200" cy="150" r="10" fill="#7BC9A3" opacity="0.4"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Bot Section -->
+    <section class="py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="mb-4">24/7 Support Bot</h2>
+                <p class="mb-4">Our AI assistant provides immediate support, resources, and coping strategies whenever you need them.</p>
+                <p class="mb-4">While not a replacement for professional help, our Support Bot can guide you to appropriate resources and offer evidence-based coping strategies for common mental health concerns.</p>
+                <a href="{{ url_for('chatbot.index') }}" class="btn btn-accent">Chat with Support Bot</a>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Support Bot</h5>
+                    </div>
+                    <div class="card-body p-4" style="height: 250px; overflow-y: auto;">
+                        <div class="d-flex mb-3">
+                            <div class="chat-message chat-message-bot">
+                                Hi there! I'm your mental health support assistant. How can I help you today?
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mb-3">
+                            <div class="chat-message chat-message-user">
+                                I've been feeling stressed lately.
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="chat-message chat-message-bot">
+                                I'm sorry to hear you're feeling stressed. Would you like to explore some simple stress management techniques, or would you prefer to check out our community forum to connect with others?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ url_for('chatbot.index') }}" class="btn btn-primary w-100">Start a Conversation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-5">
+        <h2 class="text-center mb-5">Community Voices</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="card-text">"Tracking my mood daily has helped me identify patterns and triggers I never noticed before. It's been a game-changer for my mental health journey."</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="text-white fw-bold">A</span>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Anonymous</h6>
+                                <small class="text-muted">Community Member</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="card-text">"The expert Q&A sessions have given me insights I couldn't find elsewhere. Being able to ask questions in a safe environment has been incredibly valuable."</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="text-white fw-bold">J</span>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Anonymous</h6>
+                                <small class="text-muted">Community Member</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="card-text">"The community forum made me realize I'm not alone. Finding others with similar experiences has been comforting and empowering."</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="bg-accent rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="text-white fw-bold">M</span>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Anonymous</h6>
+                                <small class="text-muted">Community Member</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-5 text-center">
+        <div class="p-5 rounded" style="background-color: rgba(91, 142, 230, 0.1);">
+            <h2 class="mb-4">Start Your Mental Health Journey Today</h2>
+            <p class="lead mb-4">Join our supportive community and access all the tools you need to nurture your mental wellbeing.</p>
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5 me-2">Sign Up Now</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg px-5">Sign In</a>
+            {% else %}
+                <a href="{{ url_for('profile.dashboard') }}" class="btn btn-primary btn-lg px-5">Go to Dashboard</a>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

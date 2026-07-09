@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin: Expert Verifications - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="my-4">Expert Verification Requests</h1>
+            
+            {% if verifications %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Pending Requests ({{ verifications|length }})</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Submitted</th>
+                                    <th>Credentials</th>
+                                    <th>License</th>
+                                    <th>Specialty</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for verification in verifications %}
+                                <tr>
+                                    <td>{{ verification.user.username }}</td>
+                                    <td>{{ verification.submitted_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#credentials-{{ verification.id }}" 
+                                                aria-expanded="false">
+                                            View
+                                        </button>
+                                    </td>
+                                    <td>{{ verification.license_number }}</td>
+                                    <td>{{ verification.specialty }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('auth.process_verification', id=verification.id, action='approve') }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('auth.process_verification', id=verification.id, action='reject') }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="credentials-{{ verification.id }}">
+                                    <td colspan="6" class="bg-light">
+                                        <div class="p-3">
+                                            <h6>Credentials:</h6>
+                                            <p class="mb-0">{{ verification.credentials }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Verification Guidelines:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Verify license numbers through appropriate professional licensing boards</li>
+                    <li>Ensure credentials match the specialty area claimed</li>
+                    <li>Check for completeness and professionalism in the application</li>
+                    <li>Approved experts can host Q&A sessions and are identified with an Expert badge</li>
+                </ul>
+            </div>
+            
+            {% else %}
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                There are no pending expert verification requests at this time.
+            </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

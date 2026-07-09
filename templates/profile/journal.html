@@ -1,0 +1,395 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+{% if edit_mode %}Edit Journal Entry{% else %}Journal{% endif %} - MindfulConnect
+{% endblock %}
+
+{% block styles %}
+<style>
+    .journal-preview {
+        max-height: 150px;
+        overflow: hidden;
+        position: relative;
+    }
+    .journal-fade {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">{% if edit_mode %}Edit Journal Entry{% else %}Journal{% endif %}</h1>
+        <p class="text-muted">{% if edit_mode %}Update your thoughts and feelings{% else %}A private space to express your thoughts and feelings{% endif %}</p>
+    </div>
+    {% if not edit_mode %}
+    <div class="mt-2 mt-md-0">
+        <button type="button" class="btn btn-primary" id="new-journal-btn">
+            <i class="fas fa-plus-circle me-1"></i> New Entry
+        </button>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% if edit_mode %}
+    <!-- Edit Journal Entry -->
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{% if entry %}Edit{% else %}New{% endif %} Journal Entry</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% if entry %}{{ url_for('profile.view_journal', entry_id=entry.id) }}{% else %}{{ url_for('profile.journal') }}{% endif %}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control", placeholder="Enter a title for your journal entry") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        {% if form.content.errors %}
+                            {{ form.content(class="form-control is-invalid", rows=15, data_sentiment_analysis="true") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.content.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.content(class="form-control", rows=15, placeholder="Express your thoughts, feelings, and experiences...", data_sentiment_analysis="true") }}
+                        {% endif %}
+                        <small class="form-text text-muted">Write freely. This is your safe space to express yourself.</small>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.is_private(class="form-check-input") }}
+                        {{ form.is_private.label(class="form-check-label") }}
+                        <small class="form-text text-muted d-block">Private entries are only visible to you.</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('profile.journal') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Journal
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-lg-8">
+        <!-- New Journal Entry Form (hidden by default) -->
+        <div class="card mb-4" id="journal-form-card" style="display: none;">
+            <div class="card-header">
+                <h5 class="mb-0">New Journal Entry</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profile.journal') }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control", placeholder="Enter a title for your journal entry") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        {% if form.content.errors %}
+                            {{ form.content(class="form-control is-invalid", rows=10, data_sentiment_analysis="true") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.content.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.content(class="form-control", rows=10, placeholder="Express your thoughts, feelings, and experiences...", data_sentiment_analysis="true") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.is_private(class="form-check-input") }}
+                        {{ form.is_private.label(class="form-check-label") }}
+                        <small class="form-text text-muted d-block">Private entries are only visible to you.</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="cancel-journal-btn">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </button>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Journal Entries -->
+        <h4 class="mb-3">Your Journal Entries</h4>
+        {% if journal_entries %}
+            <div class="row" id="journal-entries-list">
+                {% for entry in journal_entries %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 text-truncate">{{ entry.title }}</h5>
+                            <small class="text-muted">{{ entry.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="journal-preview">
+                                {{ entry.content|truncate(300)|replace('\n', '<br>')|safe }}
+
+                                <div class="journal-fade"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas {% if entry.is_private %}fa-lock text-secondary{% else %}fa-globe text-primary{% endif %} me-1"></i>
+                                <small>{{ 'Private' if entry.is_private else 'Public' }}</small>
+                                <span data-sentiment-score="{{ entry.sentiment_score }}" class="ms-2"></span>
+                            </div>
+                            <a href="{{ url_for('profile.view_journal', entry_id=entry.id) }}" class="btn btn-sm btn-outline-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5" id="empty-journal-message">
+                <i class="fas fa-book fa-4x mb-3 text-muted"></i>
+                <h5>Your Journal is Empty</h5>
+                <p class="text-muted mb-4">Start writing to document your mental health journey.</p>
+                <button type="button" class="btn btn-primary btn-lg px-4" id="start-journal-btn">
+                    <i class="fas fa-pen me-1"></i> Write Your First Entry
+                </button>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Journal Benefits -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Benefits of Journaling</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-brain text-primary"></i>
+                            </div>
+                            <div>
+                                <h6>Mental Clarity</h6>
+                                <p class="text-muted small mb-0">Writing helps organize thoughts and reduce mental clutter</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-heart text-secondary"></i>
+                            </div>
+                            <div>
+                                <h6>Emotional Processing</h6>
+                                <p class="text-muted small mb-0">Explore and understand your emotions more deeply</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-search text-accent"></i>
+                            </div>
+                            <div>
+                                <h6>Pattern Recognition</h6>
+                                <p class="text-muted small mb-0">Identify triggers and patterns in your mental health</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-warning bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-lightbulb text-warning"></i>
+                            </div>
+                            <div>
+                                <h6>Self-Discovery</h6>
+                                <p class="text-muted small mb-0">Learn more about yourself and your values</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Journaling Prompts -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Journal Prompts</h5>
+            </div>
+            <div class="card-body">
+                <p>Need inspiration? Try answering one of these prompts:</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary text-start journal-prompt">
+                        What are three things you're grateful for today?
+                    </button>
+                    <button class="btn btn-outline-primary text-start journal-prompt">
+                        How did you practice self-care today?
+                    </button>
+                    <button class="btn btn-outline-primary text-start journal-prompt">
+                        What challenged you today and how did you respond?
+                    </button>
+                    <button class="btn btn-outline-primary text-start journal-prompt">
+                        Describe a moment that brought you joy recently.
+                    </button>
+                    <button class="btn btn-outline-primary text-start journal-prompt">
+                        What's something you're looking forward to?
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/sentiment-analysis.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const newJournalBtn = document.getElementById('new-journal-btn');
+        const startJournalBtn = document.getElementById('start-journal-btn');
+        const cancelJournalBtn = document.getElementById('cancel-journal-btn');
+        const journalFormCard = document.getElementById('journal-form-card');
+        const journalEntriesList = document.getElementById('journal-entries-list');
+        const emptyJournalMessage = document.getElementById('empty-journal-message');
+        const journalPrompts = document.querySelectorAll('.journal-prompt');
+        
+        // Show the journal form when the New Entry button is clicked
+        if (newJournalBtn) {
+            newJournalBtn.addEventListener('click', function() {
+                journalFormCard.style.display = 'block';
+                if (journalEntriesList) {
+                    journalEntriesList.style.display = 'none';
+                }
+                if (emptyJournalMessage) {
+                    emptyJournalMessage.style.display = 'none';
+                }
+                this.style.display = 'none';
+                window.scrollTo(0, 0);
+            });
+        }
+        
+        // Show the journal form when the Start Journaling button is clicked
+        if (startJournalBtn) {
+            startJournalBtn.addEventListener('click', function() {
+                journalFormCard.style.display = 'block';
+                emptyJournalMessage.style.display = 'none';
+            });
+        }
+        
+        // Hide the journal form when the Cancel button is clicked
+        if (cancelJournalBtn) {
+            cancelJournalBtn.addEventListener('click', function() {
+                journalFormCard.style.display = 'none';
+                if (journalEntriesList) {
+                    journalEntriesList.style.display = 'flex';
+                    newJournalBtn.style.display = 'block';
+                } else if (emptyJournalMessage) {
+                    emptyJournalMessage.style.display = 'block';
+                }
+                window.scrollTo(0, 0);
+            });
+        }
+        
+        // Handle journal prompts
+        if (journalPrompts) {
+            journalPrompts.forEach(prompt => {
+                prompt.addEventListener('click', function() {
+                    // Show the journal form if it's hidden
+                    journalFormCard.style.display = 'block';
+                    if (journalEntriesList) {
+                        journalEntriesList.style.display = 'none';
+                    }
+                    if (emptyJournalMessage) {
+                        emptyJournalMessage.style.display = 'none';
+                    }
+                    if (newJournalBtn) {
+                        newJournalBtn.style.display = 'none';
+                    }
+                    
+                    // Set the title
+                    const titleInput = document.getElementById('title');
+                    if (titleInput && !titleInput.value) {
+                        titleInput.value = 'Reflection: ' + new Date().toLocaleDateString();
+                    }
+                    
+                    // Add the prompt to the content
+                    const contentTextarea = document.getElementById('content');
+                    if (contentTextarea) {
+                        const promptText = this.textContent.trim();
+                        let currentContent = contentTextarea.value;
+                        
+                        if (currentContent) {
+                            contentTextarea.value = currentContent + '\n\n' + promptText + '\n\n';
+                        } else {
+                            contentTextarea.value = promptText + '\n\n';
+                        }
+                        
+                        // Focus the textarea and scroll to the end
+                        contentTextarea.focus();
+                        contentTextarea.selectionStart = contentTextarea.value.length;
+                        contentTextarea.selectionEnd = contentTextarea.value.length;
+                        contentTextarea.scrollTop = contentTextarea.scrollHeight;
+                    }
+                    
+                    window.scrollTo(0, 0);
+                });
+            });
+        }
+        
+        {% if form.errors %}
+        // If there are form errors, show the form
+        if (journalFormCard) {
+            journalFormCard.style.display = 'block';
+            if (journalEntriesList) {
+                journalEntriesList.style.display = 'none';
+            }
+            if (emptyJournalMessage) {
+                emptyJournalMessage.style.display = 'none';
+            }
+            if (newJournalBtn) {
+                newJournalBtn.style.display = 'none';
+            }
+        }
+        {% endif %}
+    });
+</script>
+{% endblock %}

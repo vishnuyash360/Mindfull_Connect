@@ -1,0 +1,217 @@
+{% extends 'layout.html' %}
+
+{% block title %}Community Forum - MindfulConnect{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">Community Forum</h1>
+        <p class="text-muted">A safe space to share experiences and find support</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('forum.create_topic') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> New Topic
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login', next=url_for('forum.create_topic')) }}" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt me-1"></i> Sign In to Post
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Category filter -->
+<div class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Filter by Category</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('forum.index') }}" class="btn btn-sm {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    All Topics
+                </a>
+                <a href="{{ url_for('forum.index', category='general') }}" class="btn btn-sm {% if category == 'general' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    General Discussion
+                </a>
+                <a href="{{ url_for('forum.index', category='anxiety') }}" class="btn btn-sm {% if category == 'anxiety' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Anxiety
+                </a>
+                <a href="{{ url_for('forum.index', category='depression') }}" class="btn btn-sm {% if category == 'depression' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Depression
+                </a>
+                <a href="{{ url_for('forum.index', category='stress') }}" class="btn btn-sm {% if category == 'stress' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Stress Management
+                </a>
+                <a href="{{ url_for('forum.index', category='relationships') }}" class="btn btn-sm {% if category == 'relationships' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Relationships
+                </a>
+                <a href="{{ url_for('forum.index', category='self-care') }}" class="btn btn-sm {% if category == 'self-care' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Self-Care
+                </a>
+                <a href="{{ url_for('forum.index', category='other') }}" class="btn btn-sm {% if category == 'other' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Other
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Community guidelines -->
+<div class="alert alert-info mb-4">
+    <h5><i class="fas fa-info-circle me-2"></i> Community Guidelines</h5>
+    <p class="mb-0">Please be respectful and supportive. Remember this is a safe space for everyone. Posts that violate our guidelines may be removed.</p>
+</div>
+
+<!-- Pinned topics -->
+{% if pinned_topics %}
+<h4 class="mb-3"><i class="fas fa-thumbtack me-2"></i> Pinned Topics</h4>
+<div class="mb-4">
+    {% for topic in pinned_topics %}
+    <div class="forum-topic">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h3 class="forum-topic-title">
+                    <a href="{{ url_for('forum.view_topic', topic_id=topic.id) }}">{{ topic.title }}</a>
+                    {% if topic.is_closed %}
+                    <span class="badge bg-secondary ms-2">Closed</span>
+                    {% endif %}
+                </h3>
+                <div class="mb-2">
+                    <span class="badge bg-primary">{{ topic.category|capitalize }}</span>
+                    <small class="text-muted ms-2">
+                        By {{ topic.author.display_name }}
+                        {% if topic.author.is_expert %}
+                        <span class="badge bg-accent ms-1">Expert</span>
+                        {% endif %}
+                        • {{ topic.created_at.strftime('%b %d, %Y') }}
+                    </small>
+                </div>
+            </div>
+            <div class="text-end text-muted small">
+                <div>{{ topic.posts.count() }} replies</div>
+                <div>{{ topic.views }} views</div>
+            </div>
+        </div>
+        <p class="mb-0 text-truncate">{{ topic.content|truncate(150) }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Regular topics -->
+<h4 class="mb-3">
+    {% if category %}
+    Topics in {{ category|capitalize }}
+    {% else %}
+    Recent Topics
+    {% endif %}
+</h4>
+
+{% if topics.items %}
+    {% for topic in topics.items %}
+    <div class="forum-topic">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h3 class="forum-topic-title">
+                    <a href="{{ url_for('forum.view_topic', topic_id=topic.id) }}">{{ topic.title }}</a>
+                    {% if topic.is_closed %}
+                    <span class="badge bg-secondary ms-2">Closed</span>
+                    {% endif %}
+                </h3>
+                <div class="mb-2">
+                    <span class="badge bg-primary">{{ topic.category|capitalize }}</span>
+                    <small class="text-muted ms-2">
+                        By {{ topic.author.display_name }}
+                        {% if topic.author.is_expert %}
+                        <span class="badge bg-accent ms-1">Expert</span>
+                        {% endif %}
+                        • {{ topic.created_at.strftime('%b %d, %Y') }}
+                    </small>
+                </div>
+            </div>
+            <div class="text-end text-muted small">
+                <div>{{ topic.posts.count() }} replies</div>
+                <div>{{ topic.views }} views</div>
+            </div>
+        </div>
+        <p class="mb-0 text-truncate">{{ topic.content|truncate(150) }}</p>
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <nav aria-label="Topics pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if topics.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('forum.index', page=topics.prev_num, category=category) }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+            </li>
+            {% endif %}
+            
+            {% for page_num in topics.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                {% if page_num %}
+                    {% if page_num == topics.page %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('forum.index', page=page_num, category=category) }}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if topics.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('forum.index', page=topics.next_num, category=category) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% else %}
+    <div class="alert alert-secondary">
+        <p class="mb-0">No topics found. Be the first to start a conversation!</p>
+    </div>
+{% endif %}
+
+<!-- Resources section -->
+<div class="card mt-5">
+    <div class="card-header">
+        <h5 class="mb-0">Need Immediate Support?</h5>
+    </div>
+    <div class="card-body">
+        <p>If you're in crisis and need to talk to someone right away:</p>
+        <ul>
+            <li><strong>National Suicide Prevention Lifeline:</strong> 1-800-273-8255</li>
+            <li><strong>Crisis Text Line:</strong> Text HOME to 741741</li>
+        </ul>
+        <p>Remember, it's okay to ask for help. You're not alone.</p>
+        <div class="mt-3">
+            <a href="{{ url_for('chatbot.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-robot me-1"></i> Chat with Support Bot
+            </a>
+            <a href="{{ url_for('experts.index') }}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-user-md me-1"></i> Connect with Experts
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends 'layout.html' %}
+
+{% block title %}Expert Support - MindfulConnect{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">Mental Health Experts</h1>
+        <p class="text-muted">Connect with verified mental health professionals</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        {% if current_user.is_authenticated and not current_user.is_expert %}
+            <a href="{{ url_for('experts.verify') }}" class="btn btn-outline-primary">
+                <i class="fas fa-certificate me-1"></i> Apply as Expert
+            </a>
+        {% elif current_user.is_expert %}
+            <a href="{{ url_for('experts.dashboard') }}" class="btn btn-primary">
+                <i class="fas fa-tachometer-alt me-1"></i> Expert Dashboard
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4>Expert Support on MindfulConnect</h4>
+                        <p class="mb-0">Our experts are verified mental health professionals who volunteer their time to support our community. They provide valuable insights, host Q&A sessions, and contribute to discussions.</p>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+                        {% if current_user.is_authenticated and not current_user.is_expert %}
+                            <a href="{{ url_for('experts.verify') }}" class="btn btn-primary">Apply as Expert</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Q&A Sessions -->
+<h3 class="mb-3">Upcoming Q&A Sessions</h3>
+{% if upcoming_sessions %}
+    <div class="row">
+        {% for session in upcoming_sessions %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ session.title|truncate(30) }}</h5>
+                        <span class="badge bg-white text-primary">
+                            <i class="far fa-calendar me-1"></i> {{ session.scheduled_at.strftime('%b %d') }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="far fa-clock me-1"></i> {{ session.scheduled_at.strftime('%I:%M %p') }} • 
+                        <i class="fas fa-user-md me-1"></i> {{ session.expert.user.display_name }}
+                    </p>
+                    <p class="mb-3">{{ session.description|truncate(100) }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            <i class="fas fa-users me-1"></i> Max {{ session.max_participants }} participants
+                        </span>
+                        <span class="text-muted small">
+                            <i class="far fa-hourglass me-1"></i> {{ session.duration_minutes }} mins
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('experts.view_session', session_id=session.id) }}" class="btn btn-outline-primary w-100">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> No upcoming Q&A sessions at the moment. Check back soon!
+    </div>
+{% endif %}
+
+<!-- Our Experts -->
+<h3 class="mb-3 mt-5">Our Verified Experts</h3>
+{% if experts %}
+    <div class="row">
+        {% for expert in experts %}
+        <div class="col-md-6 mb-4">
+            <div class="card expert-card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="expert-avatar">
+                            {{ expert.user.display_name[0]|upper }}
+                        </div>
+                        <div class="expert-info">
+                            <h4 class="expert-name">{{ expert.user.display_name }}</h4>
+                            <p class="expert-specialization">{{ expert.specialization }}</p>
+                            <p class="expert-bio">{{ expert.bio|truncate(150) }}</p>
+                            <a href="{{ url_for('experts.view_expert', expert_id=expert.id) }}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> We're currently building our expert team. Check back soon!
+    </div>
+{% endif %}
+
+<!-- FAQ Section -->
+<div class="card mt-5">
+    <div class="card-header">
+        <h4 class="mb-0">Frequently Asked Questions</h4>
+    </div>
+    <div class="card-body">
+        <div class="accordion" id="expertFAQ">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        How are experts verified?
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#expertFAQ">
+                    <div class="accordion-body">
+                        Our experts go through a verification process that includes credential validation, professional background check, and review of their specializations. We ensure that all experts have appropriate qualifications in mental health fields.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        What happens during a Q&A session?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#expertFAQ">
+                    <div class="accordion-body">
+                        Q&A sessions are focused discussions led by experts on specific mental health topics. Community members can ask questions and receive insights from professionals. These sessions are educational in nature and not a replacement for therapy or medical advice.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Can I become an expert?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#expertFAQ">
+                    <div class="accordion-body">
+                        If you're a licensed mental health professional (psychologist, psychiatrist, therapist, counselor, etc.) with valid credentials, you can apply to join our expert community. Click on "Apply as Expert" to begin the verification process.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        Is expert advice a replacement for therapy?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#expertFAQ">
+                    <div class="accordion-body">
+                        No. The information provided by experts on MindfulConnect is educational and supportive in nature. It is not a substitute for professional diagnosis, treatment, or therapy. Always consult with your healthcare provider for medical advice.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

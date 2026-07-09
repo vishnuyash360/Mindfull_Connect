@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+
+{% block title %}Meditation Timer - MindfulSupport{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Meditation Timer</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h5 mb-0">About Meditation</h2>
+                </div>
+                <div class="card-body">
+                    <p>Meditation is a practice where an individual uses a technique – such as mindfulness, or focusing the mind on a particular object, thought, or activity – to train attention and awareness, and achieve a mentally clear and emotionally calm and stable state.</p>
+                    <p class="mb-0">Regular meditation has been shown to reduce stress, anxiety, and depression, improve focus and emotional regulation, and promote overall well-being.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Meditation Timer</h2>
+                </div>
+                <div class="card-body">
+                    <div class="timer-container text-center py-4">
+                        <!-- Progress Ring -->
+                        <div class="position-relative d-inline-block">
+                            <svg class="progress-ring" width="250" height="250">
+                                <circle class="progress-ring-circle-bg" stroke="#e9ecef" stroke-width="8" fill="transparent" r="110" cx="125" cy="125"></circle>
+                                <circle class="progress-ring-circle" stroke="#5B8EE6" stroke-width="8" fill="transparent" r="110" cx="125" cy="125" stroke-dasharray="691 691" stroke-dashoffset="0"></circle>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="timer-display" id="timerDisplay">05:00</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Duration Selection -->
+                        <div class="duration-selection my-4">
+                            <p class="mb-2">Select duration:</p>
+                            <div class="btn-group" role="group" aria-label="Meditation duration">
+                                <button type="button" class="btn btn-outline-primary duration-btn active" data-minutes="5">5 min</button>
+                                <button type="button" class="btn btn-outline-primary duration-btn" data-minutes="10">10 min</button>
+                                <button type="button" class="btn btn-outline-primary duration-btn" data-minutes="15">15 min</button>
+                                <button type="button" class="btn btn-outline-primary duration-btn" data-minutes="20">20 min</button>
+                                <button type="button" class="btn btn-outline-primary duration-btn" data-minutes="30">30 min</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Timer Controls -->
+                        <div class="timer-controls mb-4">
+                            <button class="btn btn-primary btn-lg me-2" id="startTimer">
+                                <i class="bi bi-play-fill"></i> Start
+                            </button>
+                            <button class="btn btn-outline-secondary btn-lg me-2" id="pauseTimer">
+                                <i class="bi bi-pause-fill"></i> Pause
+                            </button>
+                            <button class="btn btn-outline-secondary btn-lg" id="resetTimer">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                        </div>
+                        
+                        <!-- Sound Toggle -->
+                        <div class="form-check form-switch d-flex justify-content-center align-items-center">
+                            <input class="form-check-input me-2" type="checkbox" id="soundToggle" checked>
+                            <label class="form-check-label" for="soundToggle">
+                                <i class="bi bi-volume-up me-1"></i> Sound On
+                            </label>
+                        </div>
+                        
+                        <!-- Completion Message -->
+                        <div class="alert alert-success mt-4 d-none" id="completionMessage">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <strong>Meditation complete!</strong> How do you feel?
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Beginner's Guide</h3>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">Find a quiet, comfortable place to sit</li>
+                        <li class="mb-2">Set your timer for 5-10 minutes to start</li>
+                        <li class="mb-2">Close your eyes or maintain a soft gaze</li>
+                        <li class="mb-2">Focus on your breath - the sensation of inhaling and exhaling</li>
+                        <li class="mb-2">When your mind wanders (which is normal), gently bring your attention back to your breath</li>
+                        <li>Start with short sessions and gradually build up time</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Types of Meditation</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2"><strong>Mindfulness Meditation:</strong> Observing thoughts without judgment</li>
+                        <li class="mb-2"><strong>Focused Meditation:</strong> Concentrating on a single point (breath, flame, sound)</li>
+                        <li class="mb-2"><strong>Body Scan:</strong> Progressive relaxation by focusing on each body part</li>
+                        <li class="mb-2"><strong>Loving-Kindness:</strong> Cultivating feelings of compassion for self and others</li>
+                        <li class="mb-2"><strong>Mantra Meditation:</strong> Repeating a calming word or phrase</li>
+                        <li><strong>Walking Meditation:</strong> Mindful movement with attention to each step</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Benefits of Regular Practice</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Reduced stress and anxiety</li>
+                        <li class="mb-2">Improved emotional regulation</li>
+                        <li class="mb-2">Better focus and concentration</li>
+                        <li class="mb-2">Enhanced self-awareness</li>
+                        <li class="mb-2">Improved sleep quality</li>
+                        <li>Greater sense of calm and inner peace</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Track Your Progress</h3>
+                </div>
+                <div class="card-body">
+                    <p>Regular meditation practice can help improve your mental well-being over time. Consider recording your experiences in your <a href="{{ url_for('mood.journal') }}">journal</a> and tracking your mood with our <a href="{{ url_for('mood.tracker') }}">mood tracker</a> to see how meditation affects your emotional state.</p>
+                    <p class="mb-0">For guided mindfulness exercises, visit our <a href="{{ url_for('resources.mindfulness') }}">mindfulness resources</a> page.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .timer-display {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+</style>
+{% endblock %}

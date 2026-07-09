@@ -1,0 +1,176 @@
+{% extends 'layout.html' %}
+
+{% block title %}Support Bot - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .chat-container {
+        height: 70vh;
+        min-height: 400px;
+        max-height: 600px;
+    }
+    .chat-messages {
+        height: calc(100% - 110px);
+        overflow-y: auto;
+        padding: 1rem;
+    }
+    .chat-input {
+        resize: none;
+    }
+    .typing-indicator span {
+        animation: blink 1.4s infinite both;
+        height: 5px;
+        width: 5px;
+        background-color: #fff;
+        display: inline-block;
+        border-radius: 50%;
+        margin: 0 1px;
+    }
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    @keyframes blink {
+        0% { opacity: 0.1; }
+        20% { opacity: 1; }
+        100% { opacity: 0.1; }
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">Support Bot</h1>
+        <p class="text-muted">Get immediate guidance and support for your mental health</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card chat-container">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot me-2"></i> MindfulConnect Support Bot
+                </h5>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will be added here by JavaScript -->
+            </div>
+            <div class="card-footer bg-light">
+                <form id="chat-form" class="d-flex">
+                    <textarea id="chat-input" class="form-control chat-input me-2" placeholder="Type your message here..." rows="1" required></textarea>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">About Support Bot</h5>
+            </div>
+            <div class="card-body">
+                <p>The MindfulConnect Support Bot is designed to provide immediate guidance and resources for your mental health journey. While it's not a replacement for professional help, it can:</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-info-circle text-primary"></i>
+                            </div>
+                            <div>
+                                <h6>Provide Information</h6>
+                                <p class="text-muted small">Access resources about common mental health topics</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-hand-holding-heart text-secondary"></i>
+                            </div>
+                            <div>
+                                <h6>Offer Coping Strategies</h6>
+                                <p class="text-muted small">Learn techniques to manage stress, anxiety, and low mood</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-compass text-accent"></i>
+                            </div>
+                            <div>
+                                <h6>Guide You to Resources</h6>
+                                <p class="text-muted small">Direct you to appropriate platform features and external support</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-warning bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                            </div>
+                            <div>
+                                <h6>Crisis Support</h6>
+                                <p class="text-muted small">Provide emergency resources when needed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Suggested Topics</h5>
+            </div>
+            <div class="card-body">
+                <p>Not sure what to ask? Try one of these:</p>
+                <div id="chat-suggestions">
+                    <!-- Suggestion buttons will be added by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Need Human Support?</h5>
+            </div>
+            <div class="card-body">
+                <p>While our Support Bot can provide immediate guidance, sometimes it helps to connect with others.</p>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('forum.index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-users me-2"></i> Join Community Discussions
+                    </a>
+                    <a href="{{ url_for('experts.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-user-md me-2"></i> Connect with Experts
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <h6 class="mt-3">Crisis Resources</h6>
+                <p>If you're experiencing a mental health emergency:</p>
+                <ul class="mb-0">
+                    <li><strong>National Suicide Prevention Lifeline:</strong> 1-800-273-8255</li>
+                    <li><strong>Crisis Text Line:</strong> Text HOME to 741741</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

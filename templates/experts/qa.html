@@ -1,0 +1,256 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ session.title }} - Expert Q&A - MindfulSupport{% endblock %}
+
+{% block styles %}
+<style>
+    .question-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('experts.sessions') }}">Expert Q&A</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ session.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="card mb-4">
+        <div class="card-header {% if session.is_active %}bg-success text-white{% endif %}">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">{{ session.title }}</h1>
+                {% if session.is_active %}
+                <span class="badge bg-white text-success">ACTIVE</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="session-expert mb-2">
+                        <span class="expert-badge me-1">Expert</span>
+                        {{ session.expert.display_name or session.expert.username }}
+                    </p>
+                    
+                    <p class="session-time mb-3">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        {{ session.scheduled_time.strftime('%A, %B %d, %Y') }} at 
+                        {{ session.scheduled_time.strftime('%I:%M %p') }}
+                        <span class="text-muted ms-2">({{ session.duration_minutes }} min)</span>
+                    </p>
+                    
+                    <p class="session-description">{{ session.description }}</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="h6 mb-3">Session Details</h3>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="bi bi-clock me-2 text-primary"></i>
+                                    Duration: {{ session.duration_minutes }} minutes
+                                </li>
+                                <li>
+                                    <i class="bi bi-question-circle me-2 text-primary"></i>
+                                    Questions: {{ questions|length }}
+                                </li>
+                            </ul>
+                            
+                            {% if is_session_expert %}
+                            <hr>
+                            <div class="d-grid">
+                                <form method="POST" action="{{ url_for('experts.toggle_session', id=session.id) }}">
+                                    {% if session.is_active %}
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-pause-circle me-1"></i> End Session
+                                    </button>
+                                    {% else %}
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-play-circle me-1"></i> Start Session
+                                    </button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <!-- Questions and Answers -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Questions & Answers</h2>
+                    
+                    {% if can_ask and session.is_active %}
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                        <i class="bi bi-plus-circle me-1"></i> Ask a Question
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    <div class="question-list">
+                        {% if questions %}
+                        <div class="list-group list-group-flush">
+                            {% for question in questions %}
+                            <div class="list-group-item p-3">
+                                <div class="question">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <span class="text-primary">
+                                                <i class="bi bi-question-circle me-1"></i>
+                                                <strong>{{ question.get_display_name() }}</strong> asked:
+                                            </span>
+                                            <span class="text-muted ms-2 small">{{ question.created_at.strftime('%I:%M %p') }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0">{{ question.content }}</p>
+                                </div>
+                                
+                                {% if question.answer %}
+                                <div class="answer mt-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <span class="text-success">
+                                                <i class="bi bi-patch-check-fill me-1"></i>
+                                                <strong>Expert Answer:</strong>
+                                            </span>
+                                            <span class="text-muted ms-2 small">{{ question.answered_at.strftime('%I:%M %p') }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0">{{ question.answer }}</p>
+                                </div>
+                                {% elif is_session_expert and session.is_active %}
+                                <div class="mt-3">
+                                    <form method="POST" action="{{ url_for('experts.answer_question', session_id=session.id, question_id=question.id) }}" class="answer-form">
+                                        <div class="mb-2">
+                                            <textarea name="answer" class="form-control" rows="3" placeholder="Type your answer here..." required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-reply-fill me-1"></i> Submit Answer
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="p-4 text-center">
+                            <p class="text-muted mb-3">No questions have been asked yet.</p>
+                            {% if can_ask and session.is_active %}
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                                <i class="bi bi-plus-circle me-1"></i> Be the first to ask a question
+                            </button>
+                            {% elif session.is_active %}
+                            <p class="small">Sign in to ask a question.</p>
+                            {% elif session.scheduled_time > now %}
+                            <p class="small">This session hasn't started yet. Check back at the scheduled time.</p>
+                            {% else %}
+                            <p class="small">This session has ended with no questions.</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Session Guidelines -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Q&A Guidelines</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Keep questions respectful and relevant to the topic</li>
+                        <li class="mb-2">Understand that experts provide general guidance, not personalized treatment</li>
+                        <li class="mb-2">For privacy, questions can be asked anonymously</li>
+                        <li class="mb-2">If you're experiencing a crisis, please use our crisis resources</li>
+                        <li>Questions are answered in the order received, as time allows</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Related Resources -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Related Resources</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('resources.mindfulness') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-wind me-1"></i> Mindfulness Exercises
+                        </a>
+                        <a href="{{ url_for('resources.meditation') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-hourglass-split me-1"></i> Meditation Timer
+                        </a>
+                        <a href="{{ url_for('mood.tracker') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-graph-up me-1"></i> Mood Tracker
+                        </a>
+                        <a href="{{ url_for('chat.index') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-chat-dots me-1"></i> Support Chatbot
+                        </a>
+                        <a href="{{ url_for('resources.crisis_resources') }}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-telephone me-1"></i> Crisis Resources
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ask Question Modal -->
+{% if can_ask %}
+<div class="modal fade" id="askQuestionModal" tabindex="-1" aria-labelledby="askQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="askQuestionModalLabel">Ask a Question</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('experts.ask_question', id=session.id) }}" id="question-form">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">{{ form.content.label }}</label>
+                        {{ form.content(class="form-control", id="content", rows=4, placeholder="Type your question here...") }}
+                        {% for error in form.content.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.anonymous(class="form-check-input", id="anonymous") }}
+                        <label class="form-check-label" for="anonymous">
+                            {{ form.anonymous.label }}
+                        </label>
+                        <div class="form-text">Your identity will be hidden, but the question will be visible to everyone.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/qa-session.js') }}"></script>
+{% endblock %}

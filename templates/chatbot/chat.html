@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+
+{% block title %}Mental Health Chatbot - MindfulSupport{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Mental Health Chatbot</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="bi bi-robot me-2"></i> MindfulSupport Assistant
+                    </h2>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be added here dynamically -->
+                    </div>
+                    <div class="chat-input-container">
+                        <form id="chatForm">
+                            <div class="input-group">
+                                {{ form.message(class="form-control", id="message", placeholder="Type your message...", autocomplete="off") }}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send-fill"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="h5 mb-0">About the Chatbot</h3>
+                </div>
+                <div class="card-body">
+                    <p>Our mental health chatbot is designed to provide supportive guidance and coping strategies. While it's not a replacement for professional help, it can:</p>
+                    <ul class="mb-0">
+                        <li>Offer basic mental health information</li>
+                        <li>Suggest coping strategies for common concerns</li>
+                        <li>Guide you to appropriate resources</li>
+                        <li>Provide a supportive presence 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Suggested Topics</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm suggestion-btn">How can I manage anxiety?</button>
+                        <button class="btn btn-outline-primary btn-sm suggestion-btn">I'm feeling sad today</button>
+                        <button class="btn btn-outline-primary btn-sm suggestion-btn">Help me with sleep problems</button>
+                        <button class="btn btn-outline-primary btn-sm suggestion-btn">What are some grounding techniques?</button>
+                        <button class="btn btn-outline-primary btn-sm suggestion-btn">I'm having trouble focusing</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Important Notice</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>This is not a crisis service.</strong> If you're experiencing a mental health emergency, please contact:
+                        <ul class="mb-0 mt-2">
+                            <li>988 Suicide & Crisis Lifeline</li>
+                            <li>Text HOME to 741741</li>
+                            <li>Or call 911</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Additional Support Resources</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="bi bi-people-fill fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h6 mb-1">Community Forums</h3>
+                                    <p class="mb-0 small">Connect with others who understand what you're going through.</p>
+                                    <a href="{{ url_for('forums.index') }}" class="btn btn-sm btn-outline-primary mt-2">Visit Forums</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="bi bi-mortarboard-fill fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h6 mb-1">Expert Q&A</h3>
+                                    <p class="mb-0 small">Get answers from verified mental health professionals.</p>
+                                    <a href="{{ url_for('experts.sessions') }}" class="btn btn-sm btn-outline-primary mt-2">Find Sessions</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="bi bi-telephone-fill fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h6 mb-1">Crisis Resources</h3>
+                                    <p class="mb-0 small">Find helplines and resources for immediate support.</p>
+                                    <a href="{{ url_for('resources.crisis_resources') }}" class="btn btn-sm btn-outline-primary mt-2">View Resources</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add suggestion button functionality
+        const suggestionButtons = document.querySelectorAll('.suggestion-btn');
+        suggestionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const messageInput = document.getElementById('message');
+                messageInput.value = this.textContent;
+                messageInput.focus();
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}Server Error - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center py-5">
+            <h1 class="display-1 text-warning">500</h1>
+            <h2 class="mb-4">Server Error</h2>
+            
+            <div class="card mb-4">
+                <div class="card-body py-4">
+                    <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3"></i>
+                    <p class="lead">Sorry, something went wrong on our server.</p>
+                    <p class="mb-0">Our team has been notified and we're working to fix the issue. Please try again later.</p>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                You can try refreshing the page or navigating back to the home page.
+            </div>
+            
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-house-fill me-2"></i>Back to Home
+                </a>
+                <button class="btn btn-outline-secondary" onclick="window.location.reload();">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Refresh Page
+                </button>
+            </div>
+            
+            <div class="mt-5">
+                <p class="text-muted">While we fix this issue, you might want to explore these sections that may still be working:</p>
+                <div class="row row-cols-2 row-cols-md-3 g-3">
+                    <div class="col">
+                        <a href="{{ url_for('forums.index') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-people-fill text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Community Forums</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ url_for('resources.meditation') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-hourglass-split text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Meditation Timer</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ url_for('resources.crisis_resources') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-telephone-fill text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Crisis Resources</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5">
+                <p class="text-muted">
+                    If you continue to encounter this error or need immediate assistance,
+                    please email <a href="mailto:support@mindfulsupport.example.com">support@mindfulsupport.example.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

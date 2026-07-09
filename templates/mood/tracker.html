@@ -1,0 +1,302 @@
+{% extends "layout.html" %}
+
+{% block title %}Mood Tracker - MindfulSupport{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/mood-chart.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Mood Tracker</h1>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Mood Chart -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Your Mood History</h2>
+                    <div class="btn-group" role="group" aria-label="Time period filter">
+                        <button type="button" class="btn btn-outline-primary btn-sm time-filter active" data-days="30">30 Days</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm time-filter" data-days="90">90 Days</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm time-filter" data-days="180">6 Months</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mood-chart-container">
+                        <canvas id="moodChart"></canvas>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="exportMoodData()">
+                        <i class="bi bi-download"></i> Export Data
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mood Average and Tags -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="h5 mb-0">Mood Average</h3>
+                        </div>
+                        <div class="card-body text-center">
+                            {% if average_mood > 0 %}
+                            <div class="display-4 fw-bold 
+                                {% if average_mood >= 8 %}text-success
+                                {% elif average_mood >= 6 %}text-primary
+                                {% elif average_mood >= 4 %}text-warning
+                                {% else %}text-danger{% endif %}">
+                                {{ average_mood }}
+                            </div>
+                            <p class="text-muted">out of 10 over the past 30 days</p>
+                            
+                            <div class="mt-3">
+                                {% if average_mood >= 8 %}
+                                <div class="alert alert-success">
+                                    <i class="bi bi-emoji-smile-fill me-2"></i> You're doing great! Keep up the good work.
+                                </div>
+                                {% elif average_mood >= 6 %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-emoji-neutral-fill me-2"></i> You're doing well. Remember to practice self-care.
+                                </div>
+                                {% elif average_mood >= 4 %}
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-emoji-frown-fill me-2"></i> You've been feeling a bit down. Consider reaching out for support.
+                                </div>
+                                {% else %}
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-emoji-frown-fill me-2"></i> You've been struggling lately. Please consider talking to a mental health professional.
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted">Start tracking your mood to see your average score.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="h5 mb-0">Common Mood Tags</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if common_tags %}
+                            <div class="mb-3">
+                                {% for tag, count in common_tags %}
+                                <span class="mood-tag">{{ tag }} <span class="badge bg-primary rounded-pill">{{ count }}</span></span>
+                                {% endfor %}
+                            </div>
+                            <p class="text-muted small mb-0">These are your most commonly used mood tags over the past 30 days.</p>
+                            {% else %}
+                            <p class="text-muted">Add tags to your mood entries to see patterns emerge.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- New Mood Entry Form -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">How are you feeling today?</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('mood.add_mood')}}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="mood_score" class="form-label">{{ form.mood_score.label }}</label>
+                            <div class="range-wrapper">
+                                {{ form.mood_score(class="form-range", id="mood_score", min="1", max="10", step="1") }}
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>1 (Poor)</span>
+                                    <span>5-6 (Neutral)</span>
+                                    <span>10 (Excellent)</span>
+                                </div>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="fs-4 fw-bold" id="moodScoreDisplay">5</span>
+                            </div>
+                            {% for error in form.mood_score.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">{{ form.tags.label }}</label>
+                            {{ form.tags(class="form-control", id="tags", placeholder="e.g., happy, anxious, tired, energetic") }}
+                            <div class="form-text">Separate multiple tags with commas.</div>
+                            {% for error in form.tags.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">{{ form.notes.label }}</label>
+                            {{ form.notes(class="form-control", id="notes", rows="3", placeholder="What's affecting your mood today?") }}
+                            {% for error in form.notes.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Recent Entries -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Recent Entries</h3>
+                </div>
+                <div class="card-body p-0">
+                    {% if entries %}
+                    <div class="list-group list-group-flush">
+                        {% for entry in entries[:5] %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="mood-score-bubble 
+                                    {% if mood_level_score >= 8 %}bg-success
+                                    {% elif mood_level_score >= 6 %}bg-primary
+                                    {% elif mood_level_score >= 4 %}bg-warning
+                                    {% else %}bg-danger{% endif %} text-white">
+                                    {{ mood_level_score }}
+                                </div>
+                                <div class="ms-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <div class="mood-date">{{ entry.created_at.strftime('%b %d, %Y, %I:%M %p') }}</div>
+                                            {% if entry.tags %}
+                                            <div class="mt-1">
+                                                {% for tag in entry.tags.split(',') %}
+                                                <span class="mood-tag">{{ tag.strip() }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if entry.notes %}
+                                    <div class="mt-2 small">
+                                        {{ entry.notes|truncate(100) }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if entries|length > 5 %}
+                    <div class="card-footer text-center">
+                        <button class="btn btn-sm btn-outline-primary" type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#allEntries" 
+                                aria-expanded="false">
+                            View More Entries
+                        </button>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Collapsed entries -->
+                    <div class="collapse" id="allEntries">
+                        <div class="list-group list-group-flush">
+                            {% for entry in entries[5:] %}
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="mood-score-bubble 
+                                        {% if mood_level_score >= 8 %}bg-success
+                                        {% elif mood_level_score >= 6 %}bg-primary
+                                        {% elif mood_level_score >= 4 %}bg-warning
+                                        {% else %}bg-danger{% endif %} text-white">
+                                        {{ mood_level_score }}
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <div class="mood-date">{{ entry.created_at.strftime('%b %d, %Y, %I:%M %p') }}</div>
+                                                {% if entry.tags %}
+                                                <div class="mt-1">
+                                                    {% for tag in entry.tags.split(',') %}
+                                                    <span class="mood-tag">{{ tag.strip() }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% if entry.notes %}
+                                        <div class="mt-2 small">
+                                            {{ entry.notes|truncate(100) }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted mb-0">No mood entries yet. Start tracking your mood!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const moodScoreInput = document.getElementById('mood_score');
+        const moodScoreDisplay = document.getElementById('moodScoreDisplay');
+        
+        if (moodScoreInput && moodScoreDisplay) {
+            // Update display when slider moves
+            moodScoreInput.addEventListener('input', function() {
+                moodScoreDisplay.textContent = this.value;
+                
+                // Update color based on value
+                const value = parseInt(this.value);
+                moodScoreDisplay.className = 'fs-4 fw-bold';
+                
+                if (value >= 8) {
+                    moodScoreDisplay.classList.add('text-success');
+                } else if (value >= 6) {
+                    moodScoreDisplay.classList.add('text-primary');
+                } else if (value >= 4) {
+                    moodScoreDisplay.classList.add('text-warning');
+                } else {
+                    moodScoreDisplay.classList.add('text-danger');
+                }
+            });
+            
+            // Initialize on page load
+            moodScoreDisplay.textContent = moodScoreInput.value;
+        }
+        
+        // Style for mood score bubbles
+        const style = document.createElement('style');
+        style.textContent = `
+            .mood-score-bubble {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                flex-shrink: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

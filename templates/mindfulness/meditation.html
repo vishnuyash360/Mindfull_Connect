@@ -1,0 +1,227 @@
+{% extends 'layout.html' %}
+
+{% block title %}Meditation Timer - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .timer-container {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+    }
+    .timer-display {
+        font-size: 5rem;
+        font-weight: 300;
+        color: var(--primary);
+        margin: 2rem 0;
+        font-family: monospace;
+    }
+    .timer-btn {
+        min-width: 100px;
+    }
+    .timer-preset-btn {
+        min-width: 80px;
+    }
+    .timer-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .timer-presets {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1.5rem 0;
+    }
+    .ambient-selector {
+        margin: 1.5rem 0;
+    }
+    @media (max-width: 576px) {
+        .timer-display {
+            font-size: 3.5rem;
+        }
+        .timer-controls {
+            flex-direction: column;
+            align-items: center;
+        }
+        .timer-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('mindfulness.index') }}">Mindfulness</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Meditation Timer</li>
+    </ol>
+</nav>
+<h1 class="page-title">Meditation Timer</h1>
+<p class="text-muted">A simple timer to guide your meditation practice</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="timer-container text-center">
+                    <h4>Focus on your breath and clear your mind</h4>
+                    
+                    <!-- Timer Display -->
+                    <div class="timer-display" id="timer-display">05:00</div>
+                    
+                    <!-- Timer Presets -->
+                    <div class="timer-presets">
+                        <button class="btn btn-outline-primary timer-preset" data-minutes="1">1 min</button>
+                        <button class="btn btn-outline-primary timer-preset" data-minutes="3">3 min</button>
+                        <button class="btn btn-outline-primary timer-preset active" data-minutes="5">5 min</button>
+                        <button class="btn btn-outline-primary timer-preset" data-minutes="10">10 min</button>
+                        <button class="btn btn-outline-primary timer-preset" data-minutes="15">15 min</button>
+                        <button class="btn btn-outline-primary timer-preset" data-minutes="20">20 min</button>
+                        <button class="btn btn-outline-primary timer-preset" data-minutes="30">30 min</button>
+                    </div>
+                    
+                    <!-- Timer Controls -->
+                    <div class="timer-controls">
+                        <button id="timer-start" class="btn btn-primary timer-btn">
+                            <i class="fas fa-play me-2"></i> Start
+                        </button>
+                        <button id="timer-pause" class="btn btn-secondary timer-btn" disabled>
+                            <i class="fas fa-pause me-2"></i> Pause
+                        </button>
+                        <button id="timer-reset" class="btn btn-outline-secondary timer-btn">
+                            <i class="fas fa-redo me-2"></i> Reset
+                        </button>
+                    </div>
+                    
+                    <!-- Ambient Sound Selector -->
+                    <div class="ambient-selector mt-4">
+                        <h6>Ambient Sound (Optional)</h6>
+                        <div class="d-flex justify-content-center flex-wrap">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="ambient" id="ambient-none" value="none" checked>
+                                <label class="form-check-label" for="ambient-none">None</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="ambient" id="ambient-nature" value="nature">
+                                <label class="form-check-label" for="ambient-nature">Nature</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="ambient" id="ambient-rain" value="rain">
+                                <label class="form-check-label" for="ambient-rain">Rain</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="ambient" id="ambient-ocean" value="ocean">
+                                <label class="form-check-label" for="ambient-ocean">Ocean</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Completion Message (hidden by default) -->
+                <div id="completion-message" class="d-none mt-4"></div>
+                
+                <!-- Track Your Progress Card -->
+                <div class="mt-4">
+                    <div class="alert alert-info d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading">Track Your Progress</h5>
+                            <p class="mb-0">After meditation, note how you feel in your mood tracker to see how it affects your mental wellbeing over time.</p>
+                            <a href="{{ url_for('profile.mood_tracker') }}" class="btn btn-sm btn-outline-primary mt-2">Go to Mood Tracker</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Meditation Guide Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Meditation Guide</h5>
+            </div>
+            <div class="card-body">
+                <h6>1. Find a Comfortable Position</h6>
+                <p class="small">Sit in a chair with your feet flat on the floor, or on a cushion on the floor. Keep your back straight but not stiff.</p>
+                
+                <h6>2. Set Your Intention</h6>
+                <p class="small">Take a moment to remind yourself why you're meditating today.</p>
+                
+                <h6>3. Focus on Your Breath</h6>
+                <p class="small">Feel the sensation of your breath as it enters and leaves your body. Notice the rise and fall of your chest and abdomen.</p>
+                
+                <h6>4. Notice When Your Mind Wanders</h6>
+                <p class="small">When you notice your attention has drifted, gently redirect it back to your breath without judging yourself.</p>
+                
+                <h6>5. Be Kind to Yourself</h6>
+                <p class="small">If you find yourself getting frustrated, remember that noticing your mind has wandered is a moment of mindfulness itself.</p>
+                
+                <h6>6. End Gently</h6>
+                <p class="small">When the timer ends, take a moment to notice how you feel before slowly opening your eyes and moving your body.</p>
+            </div>
+        </div>
+        
+        <!-- Benefits Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Benefits of Regular Meditation</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-brain text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Reduces Stress</h6>
+                        <p class="text-muted small mb-0">Regular meditation can significantly lower stress hormone levels.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-heart text-secondary"></i>
+                    </div>
+                    <div>
+                        <h6>Improves Emotional Health</h6>
+                        <p class="text-muted small mb-0">Creates greater self-awareness and helps manage difficult emotions.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-focus text-accent"></i>
+                    </div>
+                    <div>
+                        <h6>Enhances Focus</h6>
+                        <p class="text-muted small mb-0">Strengthens attention and concentration abilities.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="rounded-circle bg-warning bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-bed text-warning"></i>
+                    </div>
+                    <div>
+                        <h6>Improves Sleep</h6>
+                        <p class="text-muted small mb-0">Helps calm the mind and prepare the body for restful sleep.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/meditation-timer.js') }}"></script>
+{% endblock %}

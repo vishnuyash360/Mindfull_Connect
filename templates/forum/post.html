@@ -1,0 +1,186 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+{% if is_edit %}
+    {% if is_topic %}Edit Topic{% else %}Edit Reply{% endif %}
+{% else %}
+    {% if is_topic %}Create New Topic{% else %}Post Reply{% endif %}
+{% endif %} - Community Forum
+{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {% if is_edit and is_topic and topic is defined %}
+<li class="breadcrumb-item">
+    <a href="{{ url_for('forum.view_topic', topic_id=topic.id) }}">
+        {{ topic.title|truncate(30) }}
+    </a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">Edit</li>
+
+{% elif is_edit and not is_topic and post is defined %}
+<li class="breadcrumb-item">
+    <a href="{{ url_for('forum.view_topic', topic_id=post.topic_id) }}">
+        Back to Topic
+    </a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">Edit Reply</li>
+
+{% elif is_topic %}
+<li class="breadcrumb-item active" aria-current="page">Create New Topic</li>
+{% endif %}
+    </ol>
+</nav>
+<h1 class="page-title">
+    {% if is_edit %}
+        {% if is_topic %}Edit Topic{% else %}Edit Reply{% endif %}
+    {% else %}
+        {% if is_topic %}Create New Topic{% else %}Post Reply{% endif %}
+    {% endif %}
+</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    {% if is_topic %}
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.category.label(class="form-label") }}
+                        {% if form.category.errors %}
+                            {{ form.category(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.category(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        {% if form.content.errors %}
+                            {{ form.content(class="form-control is-invalid", rows=10, data_sentiment_analysis="true") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.content.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.content(class="form-control", rows=10, data_sentiment_analysis="true") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6 class="mb-2"><i class="fas fa-info-circle me-2"></i> Community Guidelines</h6>
+                        <ul class="mb-0">
+                            <li>Be respectful and supportive</li>
+                            <li>Do not share personal contact information</li>
+                            <li>Respect others' privacy and anonymity</li>
+                            <li>Use trigger warnings when discussing sensitive topics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary go-back">
+                            <i class="fas fa-arrow-left me-1"></i> Cancel
+                        </button>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Writing Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Be clear and specific</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Use "I" statements when sharing feelings</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Consider how your words might affect others</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Break up long content into paragraphs</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Ask specific questions if seeking advice</li>
+                </ul>
+            </div>
+        </div>
+        
+        {% if is_topic %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Popular Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary category-suggestion" data-category="anxiety">Anxiety</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary category-suggestion" data-category="depression">Depression</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary category-suggestion" data-category="stress">Stress Management</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary category-suggestion" data-category="self-care">Self-Care</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/sentiment-analysis.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle category suggestions
+        const categorySuggestions = document.querySelectorAll('.category-suggestion');
+        const categorySelect = document.getElementById('category');
+        
+        if (categorySuggestions.length > 0 && categorySelect) {
+            categorySuggestions.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    categorySelect.value = category;
+                    
+                    // Remove active class from all buttons
+                    categorySuggestions.forEach(btn => btn.classList.remove('btn-primary', 'text-white'));
+                    categorySuggestions.forEach(btn => btn.classList.add('btn-outline-primary'));
+                    
+                    // Add active class to clicked button
+                    this.classList.remove('btn-outline-primary');
+                    this.classList.add('btn-primary', 'text-white');
+                });
+            });
+        }
+        
+        // Handle go back button
+        const goBackButton = document.querySelector('.go-back');
+        if (goBackButton) {
+            goBackButton.addEventListener('click', function() {
+                window.history.back();
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends 'layout.html' %}
+
+{% block title %}Expert Verification - MindfulConnect{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('experts.index') }}">Experts</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Apply as Expert</li>
+    </ol>
+</nav>
+<h1 class="page-title">Expert Verification</h1>
+<p class="text-muted">Apply to become a verified mental health expert</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Expert Application Form</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i> 
+                    <strong>Important:</strong> Your application will be reviewed by our team. Please provide accurate professional information to help us verify your credentials.
+                </div>
+                
+                <form method="POST" action="{{ url_for('experts.verify') }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        {{ form.credentials.label(class="form-label") }}
+                        {% if form.credentials.errors %}
+                            {{ form.credentials(class="form-control is-invalid", rows=6) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.credentials.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.credentials(class="form-control", rows=6, placeholder="Provide details about your professional qualifications, certifications, licenses, and relevant experience in mental health...") }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Include your professional degree, license number (if applicable), years of practice, and other relevant qualifications.
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.specialization.label(class="form-label") }}
+                        {% if form.specialization.errors %}
+                            {{ form.specialization(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.specialization.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.specialization(class="form-control", placeholder="E.g., Clinical Psychology, Anxiety Disorders, CBT, Trauma Therapy...") }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Specify your main area of expertise within mental health.
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.bio.label(class="form-label") }}
+                        {% if form.bio.errors %}
+                            {{ form.bio(class="form-control is-invalid", rows=8) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bio.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bio(class="form-control", rows=8, placeholder="Write a professional bio that describes your approach, experience, and what you hope to contribute to the MindfulConnect community...") }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            This bio will be visible to community members if your application is approved.
+                        </small>
+                    </div>
+                    
+                    <div class="alert alert-warning mb-4">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <strong>Note on Privacy:</strong> The credentials you provide will be used solely for verification purposes and will not be publicly displayed. Only your specialization and bio will be visible to the community.
+                    </div>
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                            I confirm that all information provided is accurate, and I understand that misrepresentation may result in removal from the expert program.
+                        </label>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('experts.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                        {{ form.submit(class="btn btn-primary", id="submit-btn", disabled=True) }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Why Become an Expert?</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-hands-helping text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Support the Community</h6>
+                        <p class="text-muted small">Help people access mental health insights and guidance in a safe environment.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-lightbulb text-secondary"></i>
+                    </div>
+                    <div>
+                        <h6>Share Your Knowledge</h6>
+                        <p class="text-muted small">Contribute your expertise through Q&A sessions and forum discussions.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-award text-accent"></i>
+                    </div>
+                    <div>
+                        <h6>Build Recognition</h6>
+                        <p class="text-muted small">Establish yourself as a trusted voice in mental health support.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="rounded-circle bg-warning bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-globe text-warning"></i>
+                    </div>
+                    <div>
+                        <h6>Make an Impact</h6>
+                        <p class="text-muted small">Reach people who might not otherwise have access to mental health resources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">What Happens Next?</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-3">Our team will review your application within 3-5 business days.</li>
+                    <li class="mb-3">We may contact you for additional information or verification.</li>
+                    <li class="mb-3">Once verified, you'll receive access to expert features.</li>
+                    <li>You can then schedule Q&A sessions and engage with the community as a verified expert.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enable/disable submit button based on checkbox
+    const agreeTerms = document.getElementById('agreeTerms');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (agreeTerms && submitBtn) {
+        agreeTerms.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+        });
+    }
+    
+    // Form validation before submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        if (!agreeTerms.checked) {
+            e.preventDefault();
+            alert('You must agree to the terms to submit your application.');
+            return false;
+        }
+        return true;
+    });
+});
+</script>
+{% endblock %}

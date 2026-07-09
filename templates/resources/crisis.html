@@ -1,0 +1,206 @@
+{% extends "layout.html" %}
+
+{% block title %}Crisis Resources - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Crisis Resources</h1>
+    
+    <div class="alert alert-warning mb-4">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+            </div>
+            <div>
+                <h2 class="h5 mb-2">If you're experiencing a mental health emergency:</h2>
+                <ul class="mb-0">
+                    <li>Call 988 or the National Suicide Prevention Lifeline at 1-800-273-8255 (US)</li>
+                    <li>Text HOME to 741741 to reach the Crisis Text Line</li>
+                    <li>Call 911 or go to your nearest emergency room</li>
+                    <li>If outside the US, please see the international resources below</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">National Crisis Hotlines & Resources</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Contact</th>
+                                    <th>Services</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for resource in resources %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ resource.name }}</strong><br>
+                                        <a href="{{ resource.website }}" target="_blank" rel="noopener noreferrer" class="small">
+                                            {{ resource.website }}
+                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="d-block fw-bold">{{ resource.contact }}</span>
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 small">{{ resource.description }}</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h5 mb-0">Warning Signs</h2>
+                </div>
+                <div class="card-body">
+                    <p class="fw-bold mb-2">Be aware of these warning signs that someone may be in crisis:</p>
+                    <ul>
+                        <li>Talking about wanting to die or kill oneself</li>
+                        <li>Looking for ways to kill oneself</li>
+                        <li>Talking about feeling hopeless or having no purpose</li>
+                        <li>Talking about feeling trapped or being in unbearable pain</li>
+                        <li>Talking about being a burden to others</li>
+                        <li>Increasing use of alcohol or drugs</li>
+                        <li>Acting anxious, agitated, or reckless</li>
+                        <li>Sleeping too little or too much</li>
+                        <li>Withdrawing or feeling isolated</li>
+                        <li>Showing rage or talking about seeking revenge</li>
+                        <li>Displaying extreme mood swings</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header bg-accent text-white">
+                    <h2 class="h5 mb-0">How to Help Others</h2>
+                </div>
+                <div class="card-body">
+                    <p class="fw-bold mb-2">If you're concerned about someone:</p>
+                    <ol>
+                        <li>Ask directly if they are thinking about suicide</li>
+                        <li>Listen without judgment</li>
+                        <li>Keep them safe - remove means of self-harm if possible</li>
+                        <li>Stay with them</li>
+                        <li>Help them connect with support resources</li>
+                        <li>Follow up afterward</li>
+                    </ol>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        Remember: Taking action can save a life. Don't keep suicidal thoughts a secret.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">International Crisis Resources</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <h3 class="h6 fw-bold">Canada</h3>
+                            <ul class="mb-0">
+                                <li>Canada Suicide Prevention Service: 1-833-456-4566</li>
+                                <li>Crisis Text Line: Text HOME to 686868</li>
+                                <li>Kids Help Phone: 1-800-668-6868</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <h3 class="h6 fw-bold">United Kingdom</h3>
+                            <ul class="mb-0">
+                                <li>Samaritans: 116 123</li>
+                                <li>CALM (Campaign Against Living Miserably): 0800 58 58 58</li>
+                                <li>Papyrus (for people under 35): 0800 068 4141</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <h3 class="h6 fw-bold">Australia</h3>
+                            <ul class="mb-0">
+                                <li>Lifeline Australia: 13 11 14</li>
+                                <li>Kids Helpline: 1800 55 1800</li>
+                                <li>Beyond Blue: 1300 22 4636</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <h3 class="h6 fw-bold">New Zealand</h3>
+                            <ul class="mb-0">
+                                <li>Lifeline Aotearoa: 0800 543 354</li>
+                                <li>Youthline: 0800 376 633</li>
+                                <li>1737 Need to talk?: Text or call 1737</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <h3 class="h6 fw-bold">India</h3>
+                            <ul class="mb-0">
+                                <li>AASRA: 91-22-27546669</li>
+                                <li>Sneha India: 91-44-24640050</li>
+                                <li>Vandrevala Foundation: 1860 266 2345</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <h3 class="h6 fw-bold">Global Resources</h3>
+                            <ul class="mb-0">
+                                <li><a href="https://www.befrienders.org/" target="_blank" rel="noopener noreferrer">Befrienders Worldwide</a></li>
+                                <li><a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener noreferrer">International Association for Suicide Prevention</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Finding Professional Help</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <h3 class="h6 mb-2">Types of Mental Health Support:</h3>
+                            <ul>
+                                <li>Therapists/Counselors</li>
+                                <li>Psychologists</li>
+                                <li>Psychiatrists</li>
+                                <li>Primary care physicians</li>
+                                <li>Support groups</li>
+                                <li>Community mental health centers</li>
+                                <li>Online therapy platforms</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="h6 mb-2">Resources to Find Providers:</h3>
+                            <ul>
+                                <li>Psychology Today's <a href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener noreferrer">Therapist Directory</a></li>
+                                <li>American Psychological Association's <a href="https://locator.apa.org/" target="_blank" rel="noopener noreferrer">Psychologist Locator</a></li>
+                                <li>National Alliance on Mental Illness (NAMI) <a href="https://www.nami.org/help" target="_blank" rel="noopener noreferrer">Helpline</a></li>
+                                <li>Substance Abuse and Mental Health Services Administration (SAMHSA) <a href="https://findtreatment.samhsa.gov/" target="_blank" rel="noopener noreferrer">Treatment Locator</a></li>
+                                <li>Your health insurance provider's directory</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

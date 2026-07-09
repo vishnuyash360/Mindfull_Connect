@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ category.name }} - Forums - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('forums.index') }}">Forums</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ category.name }}</h1>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('forums.new_topic') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> New Topic
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+            Sign in to post
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <p class="mb-0">{{ category.description }}</p>
+        </div>
+    </div>
+    
+    {% if topics %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Topics</h2>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for topic in topics %}
+            <div class="list-group-item topic-item">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="h5 mb-1">
+                            <a href="{{ url_for('forums.topic', id=topic.id) }}" class="text-decoration-none">{{ topic.title }}</a>
+                        </h3>
+                        <p class="post-meta mb-0">
+                            Started by 
+                            {% set first_post = topic.posts.first() %}
+                            {% if first_post and first_post.anonymous %}
+                            Anonymous
+                            {% else %}
+                            {{ topic.creator.display_name or topic.creator.username }}
+                            {% if topic.creator.is_expert and topic.creator.expert_verified %}
+                            <span class="badge bg-primary">Expert</span>
+                            {% endif %}
+                            {% endif %}
+                            on {{ topic.created_at.strftime('%b %d, %Y at %H:%M') }}
+                        </p>
+                    </div>
+                    <div class="text-end text-muted d-none d-md-block">
+                        <span class="badge bg-secondary">{{ topic.posts.count() }} posts</span>
+                        <span class="badge bg-light text-dark">{{ topic.posts.first().comments.count() }} comments</span>
+                        <div class="small mt-1">
+                            Last activity: 
+                            {% if topic.posts.count() > 0 %}
+                                {% set last_post = topic.posts.order_by(topic.posts.c.created_at.desc()).first() %}
+                                {{ last_post.created_at.strftime('%b %d, %Y') }}
+                            {% else %}
+                                {{ topic.created_at.strftime('%b %d, %Y') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        No topics have been created in this category yet. Be the first to start a discussion!
+    </div>
+    {% endif %}
+    
+    <div class="mt-4 text-center">
+        <a href="{{ url_for('forums.index') }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Forums
+        </a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('forums.new_topic') }}" class="btn btn-primary ms-2">
+            <i class="bi bi-plus-lg me-2"></i>New Topic
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

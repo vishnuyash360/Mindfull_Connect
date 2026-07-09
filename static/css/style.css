@@ -1,0 +1,689 @@
+/* 
+Mental Health Support Platform Styles
+Colors:
+- Primary: #5B8EE6 (calming blue)
+- Secondary: #7BC9A3 (soothing green)
+- Background: #F8F9FB (soft white)
+- Text: #2D3748 (dark blue-grey)
+- Accent: #FFB084 (warm orange)
+- Warning: #FF6B6B (gentle red)
+*/
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+
+/* Base styles */
+:root {
+  --primary: #5B8EE6;
+  --primary-light: #7DA0EA;
+  --primary-dark: #4A7CD5;
+  --secondary: #7BC9A3;
+  --secondary-light: #8FD3B3;
+  --secondary-dark: #69B792;
+  --background: #F8F9FB;
+  --text: #2D3748;
+  --text-light: #4A5568;
+  --accent: #FFB084;
+  --accent-light: #FFBF9E;
+  --accent-dark: #FF9E69;
+  --warning: #FF6B6B;
+  --warning-light: #FF8585;
+  --warning-dark: #FF5252;
+  --white: #FFFFFF;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--background);
+  margin: 0;
+  padding: 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 1.75rem;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 1.35;
+}
+
+h5 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+h6 {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Layout */
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(45, 55, 72, 0.1);
+}
+
+.page-title {
+  margin-bottom: 0.5rem;
+}
+
+/* Navigation */
+.navbar {
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+  padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.nav-link {
+  color: var(--text);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: var(--transition);
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.nav-link.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Cards */
+.card {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+  background-color: rgba(91, 142, 230, 0.05);
+  border-bottom: 1px solid rgba(45, 55, 72, 0.1);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  padding: 1rem 1.5rem;
+  background-color: rgba(91, 142, 230, 0.05);
+  border-top: 1px solid rgba(45, 55, 72, 0.1);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn-primary {
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  color: var(--white);
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  color: var(--white);
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+.btn-secondary:hover {
+  color: var(--white);
+  background-color: var(--secondary-dark);
+  border-color: var(--secondary-dark);
+}
+
+.btn-accent {
+  color: var(--white);
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-accent:hover {
+  color: var(--white);
+  background-color: var(--accent-dark);
+  border-color: var(--accent-dark);
+}
+
+.btn-warning {
+  color: var(--white);
+  background-color: var(--warning);
+  border-color: var(--warning);
+}
+
+.btn-warning:hover {
+  color: var(--white);
+  background-color: var(--warning-dark);
+  border-color: var(--warning-dark);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  background-color: transparent;
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--white);
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  color: var(--text);
+  background-color: var(--white);
+  border-color: var(--primary-light);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(91, 142, 230, 0.25);
+}
+
+label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Alerts */
+.alert {
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+}
+
+.alert-primary {
+  color: var(--primary-dark);
+  background-color: rgba(91, 142, 230, 0.1);
+  border-color: rgba(91, 142, 230, 0.2);
+}
+
+.alert-secondary {
+  color: var(--secondary-dark);
+  background-color: rgba(123, 201, 163, 0.1);
+  border-color: rgba(123, 201, 163, 0.2);
+}
+
+.alert-warning {
+  color: var(--warning-dark);
+  background-color: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+.alert-success {
+  color: var(--secondary-dark);
+  background-color: rgba(123, 201, 163, 0.1);
+  border-color: rgba(123, 201, 163, 0.2);
+}
+
+.alert-danger {
+  color: var(--warning-dark);
+  background-color: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+/* Forum styles */
+.forum-topic {
+  transition: var(--transition);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.forum-topic:hover {
+  background-color: rgba(91, 142, 230, 0.05);
+}
+
+.forum-topic-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.forum-post {
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.forum-post-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.forum-post-author {
+  font-weight: 500;
+}
+
+.forum-post-date {
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+.forum-post-content {
+  margin-bottom: 0.5rem;
+}
+
+.forum-post-footer {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+/* Mood tracker styles */
+.mood-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.mood-level {
+  font-size: 2rem;
+  font-weight: 600;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.mood-level-1, .mood-level-2 {
+  background-color: rgba(255, 107, 107, 0.2);
+  color: var(--warning-dark);
+}
+
+.mood-level-3, .mood-level-4 {
+  background-color: rgba(255, 176, 132, 0.2);
+  color: var(--accent-dark);
+}
+
+.mood-level-5, .mood-level-6 {
+  background-color: rgba(123, 201, 163, 0.1);
+  color: var(--secondary-dark);
+}
+
+.mood-level-7, .mood-level-8 {
+  background-color: rgba(123, 201, 163, 0.2);
+  color: var(--secondary-dark);
+}
+
+.mood-level-9, .mood-level-10 {
+  background-color: rgba(123, 201, 163, 0.3);
+  color: var(--secondary-dark);
+}
+
+.mood-details {
+  flex-grow: 1;
+}
+
+.mood-date {
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+.mood-notes {
+  margin-top: 0.5rem;
+}
+
+.mood-tags {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.mood-tag {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  background-color: rgba(91, 142, 230, 0.1);
+  color: var(--primary);
+}
+
+/* Journal styles */
+.journal-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.journal-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.journal-date {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.journal-content {
+  margin-bottom: 1rem;
+}
+
+/* Chatbot styles */
+.chat-container {
+  height: 500px;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 1rem;
+  background-color: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-input-container {
+  padding: 1rem;
+  border-top: 1px solid rgba(45, 55, 72, 0.1);
+  display: flex;
+}
+
+.chat-input {
+  flex-grow: 1;
+  border: 1px solid rgba(45, 55, 72, 0.2);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+}
+
+.chat-message {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 18px;
+  position: relative;
+}
+
+.chat-message-user {
+  align-self: flex-end;
+  background-color: var(--primary);
+  color: var(--white);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message-bot {
+  align-self: flex-start;
+  background-color: var(--background);
+  border-bottom-left-radius: 4px;
+}
+
+/* Expert styles */
+.expert-card {
+  display: flex;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.expert-info {
+  flex-grow: 1;
+}
+
+.expert-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 1.5rem;
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.expert-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.expert-specialization {
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+.expert-bio {
+  margin-bottom: 1rem;
+}
+
+.session-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.session-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.session-datetime {
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.session-expert {
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+}
+
+.session-description {
+  margin-bottom: 1rem;
+}
+
+/* Meditation timer styles */
+.timer-container {
+  text-align: center;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.timer-display {
+  font-size: 4rem;
+  font-weight: 300;
+  margin: 2rem 0;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.timer-btn {
+  margin: 0 0.5rem;
+}
+
+.timer-preset-btn {
+  margin: 0.5rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  .expert-card {
+    flex-direction: column;
+  }
+  
+  .expert-avatar {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .chat-container {
+    height: 400px;
+  }
+}
+
+/* Accessibility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles for keyboard navigation */
+a:focus, button:focus, input:focus, textarea:focus, select:focus, [tabindex]:focus {
+  outline: 3px solid rgba(91, 142, 230, 0.5);
+  outline-offset: 2px;
+}

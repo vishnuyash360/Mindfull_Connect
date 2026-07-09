@@ -1,0 +1,289 @@
+{% extends "layout.html" %}
+
+{% block title %}Mindfulness Exercises - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Mindfulness Exercises</h1>
+    
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h5 mb-0">What is Mindfulness?</h2>
+                </div>
+                <div class="card-body">
+                    <p>Mindfulness is the practice of purposely bringing one's attention to the present moment without judgment. It helps us become more aware of our thoughts, feelings, bodily sensations, and surrounding environment.</p>
+                    <p class="mb-0">Regular mindfulness practice can reduce stress, improve focus, and help manage difficult emotions. The exercises below can be practiced anywhere and only take a few minutes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Quick Tips</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Start with short sessions (3-5 minutes)</li>
+                        <li class="mb-2">Practice regularly, even if briefly</li>
+                        <li class="mb-2">Your mind will wander - that's normal</li>
+                        <li class="mb-2">Gently return focus when distracted</li>
+                        <li>Be patient and non-judgmental with yourself</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Exercise Cards -->
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+        {% for exercise in exercises %}
+        <div class="col">
+            <div class="card exercise-card h-100">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">{{ exercise.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <p>{{ exercise.description }}</p>
+                    <h4 class="h6 text-primary mb-2">How to Practice:</h4>
+                    <ol class="exercise-steps">
+                        {% for step in exercise.steps %}
+                        <li>{{ step }}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">Duration: 5-10 minutes</span>
+                        <button class="btn btn-sm btn-outline-primary practice-btn" data-exercise="{{ exercise.title }}">
+                            Practice Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Practice Modal -->
+    <div class="modal fade" id="practiceModal" tabindex="-1" aria-labelledby="practiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="practiceModalLabel">Practice Exercise</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="exerciseContent">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="text-center mt-4 mb-3">
+                        <div class="practice-timer-container mb-3 d-none">
+                            <div class="practice-timer">05:00</div>
+                            <div class="progress mt-2">
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        
+                        <button id="startPracticeBtn" class="btn btn-primary me-2">
+                            <i class="bi bi-play-fill"></i> Start Practice (5 min)
+                        </button>
+                        <button id="endPracticeBtn" class="btn btn-outline-secondary d-none">
+                            <i class="bi bi-x-circle"></i> End Practice
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional Resources -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">When to Practice</h3>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">Try incorporating mindfulness into your daily routine:</p>
+                    <ul class="mb-0 mt-2">
+                        <li>In the morning to set a positive tone for the day</li>
+                        <li>During a work break to reset your focus</li>
+                        <li>When feeling stressed or overwhelmed</li>
+                        <li>Before bed to help quiet your mind</li>
+                        <li>While doing everyday activities like eating or walking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Related Tools</h3>
+                </div>
+                <div class="card-body">
+                    <p>Enhance your mindfulness practice with these additional resources:</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('resources.meditation') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-hourglass-split me-2"></i>Meditation Timer
+                        </a>
+                        <a href="{{ url_for('mood.journal') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-journal-text me-2"></i>Reflection Journal
+                        </a>
+                        <a href="{{ url_for('mood.tracker') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-graph-up me-2"></i>Mood Tracker
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Store exercise data
+        const exercisesData = {};
+        
+        {% for exercise in exercises %}
+        exercisesData["{{ exercise.title }}"] = {
+            title: "{{ exercise.title }}",
+            description: "{{ exercise.description }}",
+            steps: [
+                {% for step in exercise.steps %}
+                "{{ step }}",
+                {% endfor %}
+            ]
+        };
+        {% endfor %}
+        
+        // Practice buttons
+        const practiceButtons = document.querySelectorAll('.practice-btn');
+        const practiceModal = new bootstrap.Modal(document.getElementById('practiceModal'));
+        const exerciseContent = document.getElementById('exerciseContent');
+        const modalTitle = document.getElementById('practiceModalLabel');
+        const startPracticeBtn = document.getElementById('startPracticeBtn');
+        const endPracticeBtn = document.getElementById('endPracticeBtn');
+        const timerContainer = document.querySelector('.practice-timer-container');
+        const timerDisplay = document.querySelector('.practice-timer');
+        let practiceTimer;
+        let secondsRemaining;
+        
+        practiceButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const exerciseTitle = this.getAttribute('data-exercise');
+                const exercise = exercisesData[exerciseTitle];
+                
+                if (exercise) {
+                    modalTitle.textContent = exercise.title;
+                    
+                    let content = `<h4 class="mb-3">${exercise.title}</h4>`;
+                    content += `<p>${exercise.description}</p>`;
+                    content += `<h5 class="h6 text-primary mb-2">How to Practice:</h5>`;
+                    content += `<ol class="mb-0">`;
+                    exercise.steps.forEach(step => {
+                        content += `<li class="mb-2">${step}</li>`;
+                    });
+                    content += `</ol>`;
+                    
+                    exerciseContent.innerHTML = content;
+                    
+                    // Reset timer UI
+                    timerContainer.classList.add('d-none');
+                    startPracticeBtn.classList.remove('d-none');
+                    endPracticeBtn.classList.add('d-none');
+                    
+                    practiceModal.show();
+                }
+            });
+        });
+        
+        // Start practice button
+        startPracticeBtn.addEventListener('click', function() {
+            // Show timer
+            timerContainer.classList.remove('d-none');
+            startPracticeBtn.classList.add('d-none');
+            endPracticeBtn.classList.remove('d-none');
+            
+            // Initialize timer
+            secondsRemaining = 5 * 60; // 5 minutes
+            updateTimerDisplay();
+            
+            // Start countdown
+            practiceTimer = setInterval(function() {
+                secondsRemaining--;
+                updateTimerDisplay();
+                
+                if (secondsRemaining <= 0) {
+                    endPractice();
+                }
+            }, 1000);
+        });
+        
+        // End practice button
+        endPracticeBtn.addEventListener('click', function() {
+            endPractice();
+        });
+        
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(secondsRemaining / 60);
+            const seconds = secondsRemaining % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update progress bar
+            const progressBar = document.querySelector('.progress-bar');
+            const percentRemaining = (secondsRemaining / (5 * 60)) * 100;
+            progressBar.style.width = `${percentRemaining}%`;
+        }
+        
+        // End practice function
+        function endPractice() {
+            clearInterval(practiceTimer);
+            timerContainer.classList.add('d-none');
+            startPracticeBtn.classList.remove('d-none');
+            endPracticeBtn.classList.add('d-none');
+            
+            // Show completion message
+            const completionMessage = document.createElement('div');
+            completionMessage.className = 'alert alert-success mt-3';
+            completionMessage.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i><strong>Practice complete!</strong> How do you feel?';
+            
+            exerciseContent.appendChild(completionMessage);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (completionMessage.parentNode) {
+                    completionMessage.parentNode.removeChild(completionMessage);
+                }
+            }, 5000);
+        }
+        
+        // Close modal cleanup
+        document.getElementById('practiceModal').addEventListener('hidden.bs.modal', function() {
+            if (practiceTimer) {
+                clearInterval(practiceTimer);
+            }
+        });
+    });
+</script>
+
+<style>
+    .practice-timer {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .exercise-steps li {
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends "layout.html" %}
+
+{% block title %}Journal - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1>Your Journal</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEntryModal">
+            <i class="bi bi-pencil-square me-2"></i>New Entry
+        </button>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h5 mb-0">About Your Journal</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="bi bi-lock-fill text-success fs-3"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h6 mb-1">Private & Secure</h3>
+                                    <p class="mb-0 small">Your journal entries are private and only visible to you</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="bi bi-graph-up text-primary fs-3"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h6 mb-1">Sentiment Analysis</h3>
+                                    <p class="mb-0 small">We analyze the emotional tone of your entries to help you understand patterns</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="bi bi-journals text-accent fs-3"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h6 mb-1">Track Your Journey</h3>
+                                    <p class="mb-0 small">Regular journaling helps process emotions and track mental health progress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sentiment Trend -->
+    {% if entries %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Emotional Trends</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0">Your journal entries show a predominantly 
+                                <strong class="
+                                {% if sentiment_trend == 'very positive' or sentiment_trend == 'positive' %}text-success
+                                {% elif sentiment_trend == 'neutral' %}text-primary
+                                {% else %}text-warning{% endif %}">
+                                {{ sentiment_trend }}
+                                </strong> 
+                                sentiment.
+                            </p>
+                            
+                            {% if sentiment_trend == 'very positive' or sentiment_trend == 'positive' %}
+                            <p class="mb-0 small text-muted mt-2">
+                                You've been expressing a lot of positive emotions and optimism in your writing.
+                            </p>
+                            {% elif sentiment_trend == 'neutral' %}
+                            <p class="mb-0 small text-muted mt-2">
+                                Your writing shows a balanced perspective with mixed emotions.
+                            </p>
+                            {% elif sentiment_trend == 'negative' %}
+                            <p class="mb-0 small text-muted mt-2">
+                                You've been expressing some difficult emotions lately. Consider reaching out for support if needed.
+                            </p>
+                            {% elif sentiment_trend == 'very negative' %}
+                            <p class="mb-0 small text-muted mt-2">
+                                Your recent entries show significant distress. Please consider talking to someone you trust or a mental health professional.
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="ms-auto">
+                            <i class="bi 
+                            {% if sentiment_trend == 'very positive' %}bi-emoji-laughing-fill text-success
+                            {% elif sentiment_trend == 'positive' %}bi-emoji-smile-fill text-success
+                            {% elif sentiment_trend == 'neutral' %}bi-emoji-neutral-fill text-primary
+                            {% elif sentiment_trend == 'negative' %}bi-emoji-frown-fill text-warning
+                            {% else %}bi-emoji-frown-fill text-danger{% endif %} fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Journal Entries -->
+    <div class="row">
+        <div class="col-md-12">
+            {% if entries %}
+            <h2 class="h4 mb-3">Your Entries</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for entry in entries %}
+                <div class="col">
+                    <div class="card journal-entry h-100">
+                        <div class="card-header">
+                            <div class="card-title d-flex justify-content-between align-items-center">
+                                <h3 class="h5 mb-0 text-truncate" title="{{ entry.title }}">{{ entry.title }}</h3>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-dark" type="button" id="dropdownMenuButton{{ entry.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton{{ entry.id }}">
+                                        <li><a class="dropdown-item" href="{{ url_for('mood.view_journal_entry', id=entry.id) }}">View</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('mood.edit_journal_entry', id=entry.id) }}">Edit</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form action="{{ url_for('mood.delete_journal_entry', id=entry.id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                                                <button type="submit" class="dropdown-item text-danger">Delete</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="journal-date">{{ entry.created_at.strftime('%b %d, %Y') }}</div>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ entry.content|truncate(150) }}</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if entry.sentiment_score is not none %}
+                                <span class="badge
+                                    {% if entry.sentiment_score >= 0.5 %}bg-success
+                                    {% elif entry.sentiment_score >= 0.1 %}bg-light text-success
+                                    {% elif entry.sentiment_score > -0.1 %}bg-light text-dark
+                                    {% elif entry.sentiment_score > -0.5 %}bg-light text-warning
+                                    {% else %}bg-warning text-dark{% endif %}">
+                                    
+                                    {% if entry.sentiment_score >= 0.5 %}Very Positive
+                                    {% elif entry.sentiment_score >= 0.1 %}Positive
+                                    {% elif entry.sentiment_score > -0.1 %}Neutral
+                                    {% elif entry.sentiment_score > -0.5 %}Negative
+                                    {% else %}Very Negative{% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ url_for('mood.view_journal_entry', id=entry.id) }}" class="btn btn-sm btn-outline-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-journal-text me-2"></i>
+                You haven't created any journal entries yet. Start writing to track your thoughts and feelings!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- New Entry Modal -->
+<div class="modal fade" id="newEntryModal" tabindex="-1" aria-labelledby="newEntryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="newEntryModalLabel">Create New Journal Entry</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('mood.journal') }}">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+                        {{ form.title(class="form-control", id="title", placeholder="Give your entry a title") }}
+                        {% for error in form.title.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">{{ form.content.label }} <span class="text-danger">*</span></label>
+                        {{ form.content(class="form-control", id="content", rows="10", placeholder="Write your thoughts, feelings, and experiences...") }}
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Writing about your emotions can help process them. Your entries are private and only visible to you.
+                        </div>
+                        {% for error in form.content.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

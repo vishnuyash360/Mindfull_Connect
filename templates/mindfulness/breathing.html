@@ -1,0 +1,352 @@
+{% extends 'layout.html' %}
+
+{% block title %}Breathing Exercises - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .breathing-circle {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto;
+        transition: transform 4s ease-in-out, background-color 4s ease-in-out;
+    }
+    
+    .breathing-circle.inhale {
+        transform: scale(1.4);
+        background-color: var(--secondary);
+    }
+    
+    .breathing-circle.hold {
+        background-color: var(--accent);
+    }
+    
+    .breathing-circle.exhale {
+        transform: scale(1);
+        background-color: var(--primary);
+    }
+    
+    .breathing-controls {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .breathing-instruction {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 500;
+        min-height: 2.5rem;
+    }
+    
+    .technique-card {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    .technique-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .technique-card.active {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('mindfulness.index') }}">Mindfulness</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Breathing Exercises</li>
+    </ol>
+</nav>
+<h1 class="page-title">Breathing Exercises</h1>
+<p class="text-muted">Simple techniques to reduce stress and anxiety</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="text-center mb-4">Interactive Breathing Exercise</h4>
+                
+                <!-- Breathing Animation Circle -->
+                <div class="breathing-circle" id="breathing-circle">
+                    <span id="circle-text">Ready</span>
+                </div>
+                
+                <!-- Breathing Instruction -->
+                <div class="breathing-instruction" id="breathing-instruction">
+                    Select a breathing technique to begin
+                </div>
+                
+                <!-- Breathing Controls -->
+                <div class="breathing-controls">
+                    <button id="start-btn" class="btn btn-primary">
+                        <i class="fas fa-play me-2"></i> Start
+                    </button>
+                    <button id="pause-btn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause me-2"></i> Pause
+                    </button>
+                    <button id="reset-btn" class="btn btn-outline-secondary">
+                        <i class="fas fa-redo me-2"></i> Reset
+                    </button>
+                </div>
+                
+                <!-- Breathing Techniques -->
+                <div class="mt-5">
+                    <h5 class="mb-3">Select a Breathing Technique:</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 technique-card active" data-technique="478">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">4-7-8 Breathing</h5>
+                                    <p class="card-text text-muted small">Inhale for 4, hold for 7, exhale for 8 seconds.</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-primary">Stress Relief</span>
+                                        <span class="badge bg-secondary">Sleep Aid</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 technique-card" data-technique="boxBreathing">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Box Breathing</h5>
+                                    <p class="card-text text-muted small">Inhale, hold, exhale, and hold for 4 seconds each.</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-primary">Focus</span>
+                                        <span class="badge bg-secondary">Concentration</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 technique-card" data-technique="deepBreathing">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Deep Breathing</h5>
+                                    <p class="card-text text-muted small">Slow, deep inhale for 5 seconds, exhale for 5 seconds.</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-primary">Relaxation</span>
+                                        <span class="badge bg-secondary">Anxiety Relief</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Completion Message (hidden by default) -->
+                <div id="completion-message" class="d-none mt-4"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- About Breathing Exercises Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">About Breathing Exercises</h5>
+            </div>
+            <div class="card-body">
+                <p>Breathing exercises are powerful tools for managing stress and anxiety. By controlling your breath, you can activate your parasympathetic nervous system (rest and digest mode) and reduce the activity of your sympathetic nervous system (fight or flight mode).</p>
+                <p>Regular practice of breathing exercises can help:</p>
+                <ul>
+                    <li>Reduce stress and anxiety</li>
+                    <li>Lower blood pressure</li>
+                    <li>Improve focus and concentration</li>
+                    <li>Promote better sleep</li>
+                    <li>Increase energy levels</li>
+                </ul>
+                <p class="mb-0">Try to practice these exercises daily for the best results.</p>
+            </div>
+        </div>
+        
+        <!-- Tips Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Tips for Effective Practice</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chair text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Find a Comfortable Position</h6>
+                        <p class="text-muted small mb-0">Sit comfortably with your back straight, or lie down if preferred.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-volume-mute text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Minimize Distractions</h6>
+                        <p class="text-muted small mb-0">Choose a quiet place without interruptions for your practice.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-lungs text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Breathe Through Your Nose</h6>
+                        <p class="text-muted small mb-0">Nasal breathing filters and warms the air, and activates the diaphragm better.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-clock text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Start Small</h6>
+                        <p class="text-muted small mb-0">Begin with just 2-3 minutes of practice and gradually increase the duration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const breathingCircle = document.getElementById('breathing-circle');
+    const circleText = document.getElementById('circle-text');
+    const instruction = document.getElementById('breathing-instruction');
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const techniqueCards = document.querySelectorAll('.technique-card');
+    
+    let isBreathing = false;
+    let isPaused = false;
+    let breathingInterval;
+    let currentPhase = 0;
+    let currentTechnique = '478'; // Default technique
+    
+    // Breathing patterns (in seconds)
+    const breathingPatterns = {
+        '478': {
+            phases: ['Inhale', 'Hold', 'Exhale', 'Rest'],
+            durations: [4, 7, 8, 1],
+            classes: ['inhale', 'hold', 'exhale', '']
+        },
+        'boxBreathing': {
+            phases: ['Inhale', 'Hold', 'Exhale', 'Hold'],
+            durations: [4, 4, 4, 4],
+            classes: ['inhale', 'hold', 'exhale', 'hold']
+        },
+        'deepBreathing': {
+            phases: ['Inhale Deeply', 'Exhale Completely', 'Rest'],
+            durations: [5, 5, 2],
+            classes: ['inhale', 'exhale', '']
+        }
+    };
+    
+    // Select breathing technique
+    techniqueCards.forEach(card => {
+        card.addEventListener('click', function() {
+            if (isBreathing && !isPaused) return; // Don't change during active breathing
+            
+            // Update UI
+            techniqueCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Set current technique
+            currentTechnique = this.dataset.technique;
+            resetBreathing();
+            
+            // Update instruction
+            instruction.textContent = `Selected: ${this.querySelector('.card-title').textContent}`;
+        });
+    });
+    
+    // Start breathing exercise
+    startBtn.addEventListener('click', function() {
+        if (isPaused) {
+            // Resume from pause
+            isPaused = false;
+            this.innerHTML = '<i class="fas fa-pause me-2"></i> Pause';
+            runBreathingPhase(currentPhase);
+            return;
+        }
+        
+        if (isBreathing) return;
+        
+        isBreathing = true;
+        startBtn.innerHTML = '<i class="fas fa-pause me-2"></i> Pause';
+        pauseBtn.disabled = false;
+        
+        // Start the breathing exercise
+        currentPhase = 0;
+        runBreathingPhase(currentPhase);
+    });
+    
+    // Pause breathing exercise
+    pauseBtn.addEventListener('click', function() {
+        if (!isBreathing) return;
+        
+        isPaused = true;
+        clearTimeout(breathingInterval);
+        startBtn.innerHTML = '<i class="fas fa-play me-2"></i> Resume';
+        instruction.textContent = 'Paused';
+    });
+    
+    // Reset breathing exercise
+    resetBtn.addEventListener('click', resetBreathing);
+    
+    function resetBreathing() {
+        isBreathing = false;
+        isPaused = false;
+        clearTimeout(breathingInterval);
+        
+        breathingCircle.className = 'breathing-circle';
+        circleText.textContent = 'Ready';
+        instruction.textContent = 'Select a breathing technique to begin';
+        
+        startBtn.disabled = false;
+        startBtn.innerHTML = '<i class="fas fa-play me-2"></i> Start';
+        pauseBtn.disabled = true;
+        
+        currentPhase = 0;
+    }
+    
+    function runBreathingPhase(phase) {
+        if (!isBreathing || isPaused) return;
+        
+        const pattern = breathingPatterns[currentTechnique];
+        const currentPhaseName = pattern.phases[phase];
+        const duration = pattern.durations[phase];
+        const className = pattern.classes[phase];
+        
+        // Update UI
+        breathingCircle.className = 'breathing-circle ' + className;
+        circleText.textContent = currentPhaseName;
+        instruction.textContent = `${currentPhaseName} for ${duration} seconds`;
+        
+        // Move to the next phase after the current duration
+        breathingInterval = setTimeout(() => {
+            currentPhase = (phase + 1) % pattern.phases.length;
+            runBreathingPhase(currentPhase);
+        }, duration * 1000);
+    }
+});
+</script>
+{% endblock %}

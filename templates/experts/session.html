@@ -1,0 +1,291 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ session.title }} - Q&A Session{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('experts.index') }}">Experts</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Q&A Session</li>
+    </ol>
+</nav>
+<h1 class="page-title">Q&A Session</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ session.title }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="far fa-calendar-alt text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Date and Time</h6>
+                            <p class="mb-0">{{ session.scheduled_at.strftime('%A, %B %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="far fa-clock text-secondary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Duration</h6>
+                            <p class="mb-0">{{ session.duration_minutes }} minutes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-users text-accent"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Maximum Participants</h6>
+                            <p class="mb-0">{{ session.max_participants }} participants</p>
+                        </div>
+                    </div>
+                    
+                    {% if not session.is_active %}
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i> 
+                        This session has been cancelled.
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <hr>
+                
+                <h5>Session Details</h5>
+                <p>{{ session.description | e | replace('\n', '<br>') | safe }}</p>
+                
+                {% if current_user.is_expert and current_user.expert_profile.id == session.expert_id %}
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{{ url_for('experts.dashboard') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                    {% if session.is_active and session.scheduled_at > now %}
+                    <form method="POST" action="{{ url_for('experts.cancel_session', session_id=session.id) }}">
+                        <button type="submit" class="btn btn-outline-danger confirm-action" data-confirm="Are you sure you want to cancel this session?">
+                            <i class="fas fa-times me-1"></i> Cancel Session
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- How It Works Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">How Q&A Sessions Work</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <div class="rounded-circle bg-primary bg-opacity-25 mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-check-circle fa-2x text-primary"></i>
+                        </div>
+                        <h6>1. Register</h6>
+                        <p class="small text-muted">Secure your spot by registering for the session in advance.</p>
+                    </div>
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <div class="rounded-circle bg-primary bg-opacity-25 mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-comments fa-2x text-primary"></i>
+                        </div>
+                        <h6>2. Participate</h6>
+                        <p class="small text-muted">Join the live session and ask questions to our expert.</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-25 mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-lightbulb fa-2x text-primary"></i>
+                        </div>
+                        <h6>3. Learn & Connect</h6>
+                        <p class="small text-muted">Gain insights and connect with others who share similar experiences.</p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-4 mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Q&A sessions are educational in nature and not a replacement for therapy or medical advice. For immediate support, please use our crisis resources.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Expert Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Session Expert</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="expert-avatar mx-auto">
+                        {{ expert_user.display_name[0]|upper }}
+                    </div>
+                    <h5 class="mt-3">{{ expert_user.display_name }}</h5>
+                    <p class="text-muted">{{ expert.specialization }}</p>
+                    <a href="{{ url_for('experts.view_expert', expert_id=expert.id) }}" class="btn btn-sm btn-outline-primary">
+                        View Full Profile
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <h6>About the Expert</h6>
+                <p class="mb-0">{{ expert.bio|truncate(200) }}</p>
+            </div>
+        </div>
+        
+        <!-- Session Status Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Session Status</h5>
+            </div>
+            <div class="card-body">
+                {% if not session.is_active %}
+                    <div class="text-center py-3">
+                        <div class="rounded-circle bg-warning bg-opacity-25 mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-times-circle fa-2x text-warning"></i>
+                        </div>
+                        <h5>Session Cancelled</h5>
+                        <p class="text-muted">This Q&A session has been cancelled by the expert.</p>
+                        <a href="{{ url_for('experts.index') }}" class="btn btn-primary mt-2">
+                            Browse Other Sessions
+                        </a>
+                    </div>
+                {% elif session.scheduled_at < now %}
+                    <div class="text-center py-3">
+                        <div class="rounded-circle bg-secondary bg-opacity-25 mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-hourglass-end fa-2x text-secondary"></i>
+                        </div>
+                        <h5>Session Completed</h5>
+                        <p class="text-muted">This Q&A session has already taken place.</p>
+                        <a href="{{ url_for('experts.index') }}" class="btn btn-primary mt-2">
+                            Browse Upcoming Sessions
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <div class="rounded-circle bg-success bg-opacity-25 mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-check fa-2x text-success"></i>
+                        </div>
+                        <h5>Upcoming Session</h5>
+                        <p class="text-muted">This session is scheduled to take place on {{ session.scheduled_at.strftime('%B %d, %Y') }}.</p>
+                        
+                        <div id="session-countdown" class="my-3">
+                            <div class="row text-center">
+                                <div class="col-3">
+                                    <h5 id="days">--</h5>
+                                    <small>Days</small>
+                                </div>
+                                <div class="col-3">
+                                    <h5 id="hours">--</h5>
+                                    <small>Hours</small>
+                                </div>
+                                <div class="col-3">
+                                    <h5 id="minutes">--</h5>
+                                    <small>Mins</small>
+                                </div>
+                                <div class="col-3">
+                                    <h5 id="seconds">--</h5>
+                                    <small>Secs</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if current_user.is_authenticated %}
+                        <button class="btn btn-primary mt-2" id="register-btn">
+                            Register for Session
+                        </button>
+                        <p class="small text-muted mt-2">We'll send you a reminder before the session starts.</p>
+                        {% else %}
+                        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn btn-primary mt-2">
+                            Sign In to Register
+                        </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Session countdown timer
+    const countdownElement = document.getElementById('session-countdown');
+    const registerBtn = document.getElementById('register-btn');
+    
+    if (countdownElement) {
+        const sessionDate = new Date("{{ session.scheduled_at.isoformat() }}");
+        
+        function updateCountdown() {
+            const now = new Date();
+            const difference = sessionDate - now;
+            
+            if (difference <= 0) {
+                // Session has started or passed
+                countdownElement.innerHTML = '<div class="alert alert-info">This session has started or already passed.</div>';
+                if (registerBtn) {
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = 'Session In Progress';
+                }
+                clearInterval(countdownInterval);
+                return;
+            }
+            
+            // Calculate time units
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            // Update the elements
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+        
+        // Initial update
+        updateCountdown();
+        
+        // Update every second
+        const countdownInterval = setInterval(updateCountdown, 1000);
+    }
+    
+    // Registration button
+    if (registerBtn) {
+        registerBtn.addEventListener('click', function() {
+            // In a real implementation, this would send an API request to register
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-check-circle me-2"></i> Registered';
+            showNotification('You have been registered for this session!', 'success');
+        });
+    }
+    
+    // Confirm action (for cancel button)
+    const confirmButtons = document.querySelectorAll('.confirm-action');
+    confirmButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const message = this.dataset.confirm || 'Are you sure?';
+            if (!confirm(message)) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,259 @@
+{% extends 'layout.html' %}
+
+{% block title %}Register - MindfulConnect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center p-3">
+                <h3 class="mb-0">Create Your Account</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label") }}
+                        {% if form.username.errors %}
+                            {{ form.username(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.username(class="form-control", placeholder="Choose a username") }}
+                            <small class="form-text text-muted">Username can only contain letters, numbers, and underscores.</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control", placeholder="Enter your email address") }}
+                            <small class="form-text text-muted">We'll never share your email with anyone else.</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.display_name.label(class="form-label") }}
+                        {% if form.display_name.errors %}
+                            {{ form.display_name(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.display_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.display_name(class="form-control", placeholder="Enter your display name") }}
+                            <small class="form-text text-muted">This is how you'll appear to other users.</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        <div class="input-group">
+                            {% if form.password.errors %}
+                                {{ form.password(class="form-control is-invalid", id="password") }}
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#password">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="form-control", id="password", placeholder="Create a password") }}
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#password">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <small class="form-text text-muted d-block">Password must be at least 8 characters long.</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.password2.label(class="form-label") }}
+                        <div class="input-group">
+                            {% if form.password2.errors %}
+                                {{ form.password2(class="form-control is-invalid", id="password2") }}
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#password2">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    {% for error in form.password2.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password2(class="form-control", id="password2", placeholder="Confirm your password") }}
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#password2">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agree_terms" required>
+                            <label class="form-check-label" for="agree_terms">
+                                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Service</a> and <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+<div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_admin(class="form-check-input", id="register_admin") }}
+                            <label class="form-check-label" for="register_admin">
+                                Register as Admin
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center p-3">
+                <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Our Commitment to Privacy</h5>
+                    <p>At MindfulConnect, we understand the importance of privacy in mental health discussions. We're committed to:</p>
+                    <ul>
+                        <li>Protecting your personal information</li>
+                        <li>Providing anonymous participation options</li>
+                        <li>Never selling your data to third parties</li>
+                        <li>Maintaining a safe, supportive environment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms of Service Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Acceptance of Terms</h6>
+                <p>By accessing and using MindfulConnect, you agree to be bound by these Terms of Service.</p>
+                
+                <h6>2. Community Guidelines</h6>
+                <p>Users must treat others with respect. Harassment, hate speech, and harmful content are prohibited.</p>
+                
+                <h6>3. Medical Disclaimer</h6>
+                <p>MindfulConnect is not a replacement for professional medical advice, diagnosis, or treatment. Always seek the advice of qualified health providers.</p>
+                
+                <h6>4. Privacy</h6>
+                <p>Your use of our services is also governed by our Privacy Policy.</p>
+                
+                <h6>5. User Accounts</h6>
+                <p>You are responsible for maintaining the security of your account and password.</p>
+                
+                <h6>6. Content Moderation</h6>
+                <p>We reserve the right to remove content that violates our guidelines.</p>
+                
+                <h6>7. Limitation of Liability</h6>
+                <p>MindfulConnect is provided "as is" without warranties of any kind.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Information We Collect</h6>
+                <p>We collect information you provide (username, email) and usage data to improve our services.</p>
+                
+                <h6>2. How We Use Information</h6>
+                <p>We use your information to provide and improve our services, communicate with you, and ensure platform security.</p>
+                
+                <h6>3. Information Sharing</h6>
+                <p>We do not sell your personal information. We may share data with service providers who help us operate our platform.</p>
+                
+                <h6>4. Data Security</h6>
+                <p>We implement reasonable measures to protect your personal information.</p>
+                
+                <h6>5. Your Rights</h6>
+                <p>You have the right to access, correct, or delete your personal information.</p>
+                
+                <h6>6. Anonymous Use</h6>
+                <p>We enable anonymous participation in forums while maintaining community standards.</p>
+                
+                <h6>7. Changes to Privacy Policy</h6>
+                <p>We may update this policy and will notify users of significant changes.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+        
+        togglePasswordButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const passwordField = document.querySelector(this.getAttribute('data-target'));
+                
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    this.innerHTML = '<i class="fa fa-eye-slash"></i>';
+                } else {
+                    passwordField.type = 'password';
+                    this.innerHTML = '<i class="fa fa-eye"></i>';
+                }
+            });
+        });
+        
+        // Form submission validation
+        const form = document.querySelector('form');
+        const agreeTerms = document.getElementById('agree_terms');
+        
+        form.addEventListener('submit', function(e) {
+            if (!agreeTerms.checked) {
+                e.preventDefault();
+                alert('You must agree to the Terms of Service and Privacy Policy to create an account.');
+                return false;
+            }
+            return true;
+        });
+    });
+</script>
+{% endblock %}

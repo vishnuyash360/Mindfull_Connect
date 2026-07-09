@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block title %}Community Forums - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1>Community Forums</h1>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('forums.new_topic') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> New Topic
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+            Sign in to post
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-lightbulb-fill me-2"></i>
+        <strong>Community Guidelines:</strong> Our forums are a safe space for support and understanding. Please be respectful, avoid giving medical advice, and report any concerning content.
+    </div>
+    
+    {% if categories %}
+        {% for category in categories %}
+        <div class="card forum-category mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">{{ category.name }}</h2>
+                <a href="{{ url_for('forums.category', id=category.id) }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">{{ category.description }}</p>
+                
+                {% set topics = category.topics.order_by(category.topics.c.created_at.desc()).limit(5).all() %}
+                {% if topics %}
+                <div class="topic-list">
+                    {% for topic in topics %}
+                    <div class="topic-item d-flex justify-content-between">
+                        <div>
+                            <h3 class="h6 mb-1">
+                                <a href="{{ url_for('forums.topic', id=topic.id) }}">{{ topic.title }}</a>
+                            </h3>
+                            <p class="post-meta">
+                                Started by 
+                                {% set first_post = topic.posts.first() %}
+                                {% if first_post and first_post.anonymous %}
+                                Anonymous
+                                {% else %}
+                                {{ topic.creator.display_name or topic.creator.username }}
+                                {% if topic.creator.is_expert and topic.creator.expert_verified %}
+                                <span class="badge bg-primary">Expert</span>
+                                {% endif %}
+                                {% endif %}
+                                - {{ topic.created_at.strftime('%b %d, %Y') }}
+                            </p>
+                        </div>
+                        <div class="text-end text-muted">
+                            <small>
+                                {{ topic.posts.count() }} posts<br>
+                                {{ topic.posts.first().comments.count() }} comments
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-muted my-4">No topics yet in this category.</p>
+                {% endif %}
+            </div>
+            <div class="card-footer text-end">
+                <a href="{{ url_for('forums.category', id=category.id) }}" class="text-decoration-none">View All Topics <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            No forum categories found. Our administrators will be adding categories soon.
+        </div>
+    {% endif %}
+    
+    <div class="card mt-5">
+        <div class="card-header bg-secondary text-white">
+            <h2 class="h5 mb-0">Forum Guidelines</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h6 mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Do's:</h3>
+                    <ul>
+                        <li>Share your experiences and emotions</li>
+                        <li>Offer peer support and encouragement</li>
+                        <li>Report concerning content</li>
+                        <li>Respect different perspectives</li>
+                        <li>Maintain privacy - avoid sharing identifying details</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h6 mb-2"><i class="bi bi-x-circle-fill text-danger me-2"></i>Don'ts:</h3>
+                    <ul>
+                        <li>Give medical or professional advice</li>
+                        <li>Share contact information publicly</li>
+                        <li>Post triggering content without warnings</li>
+                        <li>Use disrespectful or discriminatory language</li>
+                        <li>Promote harmful behaviors or dangerous activities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

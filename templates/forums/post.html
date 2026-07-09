@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ topic.title }} - Reply - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('forums.index') }}">Forums</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('forums.category', id=topic.category_id) }}">{{ topic.category.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('forums.topic', id=topic.id) }}">{{ topic.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Reply</li>
+        </ol>
+    </nav>
+    
+    <h1 class="h3 mb-4">Reply to: {{ topic.title }}</h1>
+    
+    <!-- Post -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                {% if post.anonymous %}
+                <span class="text-muted">Posted anonymously</span>
+                {% else %}
+                <span>Posted by 
+                    <strong>{{ post.author.display_name or post.author.username }}</strong>
+                    {% if post.author.is_expert and post.author.expert_verified %}
+                    <span class="badge bg-primary">Expert</span>
+                    {% endif %}
+                </span>
+                {% endif %}
+                <span class="text-muted ms-2">on {{ post.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
+            </div>
+            {% if current_user.is_authenticated %}
+            <button class="btn btn-sm btn-outline-secondary report-button" 
+                    data-content-type="post" 
+                    data-content-id="{{ post.id }}">
+                <i class="bi bi-flag"></i> Report
+            </button>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="post-content">
+                {{ post.content|nl2br }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comments -->
+    <div class="comment-section mb-5">
+        <h2 class="h5 mb-3">{{ comments|length }} Comments</h2>
+        
+        {% if comments %}
+        {% for comment in comments %}
+        <div class="comment mb-3">
+            <div class="d-flex justify-content-between">
+                <div class="comment-meta mb-2">
+                    {% if comment.anonymous %}
+                    <span class="text-muted">Anonymous</span>
+                    {% else %}
+                    <span>
+                        <strong>{{ comment.author.display_name or comment.author.username }}</strong>
+                        {% if comment.author.is_expert and comment.author.expert_verified %}
+                        <span class="badge bg-primary">Expert</span>
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                    <span class="text-muted ms-2">{{ comment.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
+                </div>
+                {% if current_user.is_authenticated %}
+                <button class="btn btn-sm btn-link text-muted report-button" 
+                        data-content-type="comment" 
+                        data-content-id="{{ comment.id }}">
+                    <i class="bi bi-flag"></i> Report
+                </button>
+                {% endif %}
+            </div>
+            <div class="comment-content">
+                {{ comment.content|nl2br }}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-light">
+            <i class="bi bi-chat me-2"></i>
+            No comments yet. Be the first to comment!
+        </div>
+        {% endif %}
+        
+        <!-- Reply Form -->
+        {% if current_user.is_authenticated %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Add a Comment</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('forums.post', id=post.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.content(class="form-control", rows=3, placeholder="Share your thoughts or support...") }}
+                        {% for error in form.content.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.anonymous(class="form-check-input anonymous-toggle", id="comment-anonymous") }}
+                            <label class="form-check-label" for="comment-anonymous">
+                                {{ form.anonymous.label }}
+                            </label>
+                        </div>
+                        <div class="form-text anonymity-notice d-none">
+                            <i class="bi bi-shield-fill-check text-success me-1"></i>
+                            Your identity will be hidden from other users.
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            Please <a href="{{ url_for('auth.login') }}">sign in</a> to join the conversation.
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-4 mb-5 text-center">
+        <a href="{{ url_for('forums.topic', id=topic.id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Topic
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const anonymousCheckbox = document.querySelector('.anonymous-toggle');
+        const anonymityNotice = document.querySelector('.anonymity-notice');
+        
+        if (anonymousCheckbox && anonymityNotice) {
+            anonymousCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    anonymityNotice.classList.remove('d-none');
+                } else {
+                    anonymityNotice.classList.add('d-none');
+                }
+            });
+            
+            // Initialize on page load
+            if (anonymousCheckbox.checked) {
+                anonymityNotice.classList.remove('d-none');
+            }
+        }
+    });
+</script>
+{% endblock %}

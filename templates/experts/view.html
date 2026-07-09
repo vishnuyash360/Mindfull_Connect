@@ -1,0 +1,152 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ expert_user.display_name }} - Expert Profile{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('experts.index') }}">Experts</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Expert Profile</li>
+    </ol>
+</nav>
+<h1 class="page-title">Expert Profile</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row">
+                    <div class="text-center me-md-4 mb-3 mb-md-0">
+                        <div class="expert-avatar mx-auto" style="width: 120px; height: 120px; font-size: 3rem;">
+                            {{ expert_user.display_name[0]|upper }}
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h2 class="mb-1">{{ expert_user.display_name }}</h2>
+                        <p class="text-muted mb-3">{{ expert.specialization }}</p>
+                        
+                        <div class="d-flex flex-wrap mb-3">
+                            <span class="badge bg-primary me-2 mb-2">Verified Expert</span>
+                            <span class="badge bg-secondary me-2 mb-2">
+                                <i class="far fa-calendar-alt me-1"></i> Joined {{ expert_user.date_joined.strftime('%b %Y') }}
+                            </span>
+                        </div>
+                        
+                        <h5 class="mt-4">About</h5>
+                        <p>{{ expert.bio | nl2br }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Sessions Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Upcoming Q&A Sessions</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_sessions %}
+                    <div class="list-group list-group-flush">
+                        {% for session in upcoming_sessions %}
+                        <div class="list-group-item">
+                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                                <div>
+                                    <h5 class="mb-1">
+                                        <a href="{{ url_for('experts.view_session', session_id=session.id) }}">
+                                            {{ session.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="mb-1 text-muted">
+                                        <i class="far fa-calendar-alt me-1"></i> {{ session.scheduled_at.strftime('%A, %B %d, %Y') }}
+                                        <i class="far fa-clock ms-2 me-1"></i> {{ session.scheduled_at.strftime('%I:%M %p') }}
+                                        <i class="far fa-hourglass ms-2 me-1"></i> {{ session.duration_minutes }} minutes
+                                    </p>
+                                    <p class="mb-0">{{ session.description|truncate(150) }}</p>
+                                </div>
+                                <div class="mt-2 mt-md-0">
+                                    <a href="{{ url_for('experts.view_session', session_id=session.id) }}" class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> {{ expert_user.display_name }} doesn't have any upcoming sessions scheduled at the moment.
+                    </div>
+                    
+                    <div class="text-center py-3">
+                        <p>Check back later or explore sessions from other experts.</p>
+                        <a href="{{ url_for('experts.index') }}" class="btn btn-primary">
+                            Browse All Sessions
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Expert Info Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Expert Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-certificate text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Specialization</h6>
+                        <p class="mb-0">{{ expert.specialization }}</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-calendar-check text-secondary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Verified Since</h6>
+                        <p class="mb-0">{{ expert.verification_date.strftime('%B %Y') if expert.verification_date else 'N/A' }}</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users text-accent"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Upcoming Sessions</h6>
+                        <p class="mb-0">{{ upcoming_sessions|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Disclaimer Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Important Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i> Educational Purpose</h6>
+                    <p class="small mb-0">Expert insights on MindfulConnect are educational in nature and not a substitute for professional therapy or medical advice.</p>
+                </div>
+                
+                <h6 class="mt-4">About Our Experts</h6>
+                <p class="small">All experts on MindfulConnect undergo a verification process to confirm their professional credentials. They volunteer their time to support our community.</p>
+                
+                <h6 class="mt-3">Engaging with Experts</h6>
+                <p class="small mb-0">The best way to engage with our experts is through scheduled Q&A sessions or by participating in forum discussions where they contribute.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

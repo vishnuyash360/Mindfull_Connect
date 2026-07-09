@@ -1,0 +1,277 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dashboard - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .mood-indicator {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+    }
+    .mood-1, .mood-2 { background-color: var(--warning); }
+    .mood-3, .mood-4 { background-color: var(--warning-light); }
+    .mood-5, .mood-6 { background-color: var(--accent); }
+    .mood-7, .mood-8 { background-color: var(--secondary-light); }
+    .mood-9, .mood-10 { background-color: var(--secondary); }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">Welcome, {{ current_user.display_name }}</h1>
+        <p class="text-muted">Your personal mental health dashboard</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="{{ url_for('profile.mood_tracker') }}" class="btn btn-primary me-2">
+            <i class="fas fa-plus-circle me-1"></i> Log Mood
+        </a>
+        <a href="{{ url_for('profile.journal') }}" class="btn btn-outline-primary">
+            <i class="fas fa-book me-1"></i> New Journal
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">Current Streak</h6>
+                <h2 class="display-4 mb-0">{{ mood_entries|length if mood_entries else 0 }}</h2>
+                <p class="text-muted">days tracked</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">Average Mood</h6>
+                <h2 class="display-4 mb-0">{{ "%.1f"|format(avg_mood) }}</h2>
+                <p class="text-muted">out of 10</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">Journal Entries</h6>
+                <h2 class="display-4 mb-0">{{ journal_entries|length }}</h2>
+                <p class="text-muted">total entries</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">Member Since</h6>
+                <h2 class="display-4 mb-0">{{ current_user.date_joined.strftime('%b') }}</h2>
+                <p class="text-muted">{{ current_user.date_joined.strftime('%Y') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Mood Tracker Section -->
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Mood History</h5>
+                <a href="{{ url_for('profile.mood_tracker') }}" class="btn btn-sm btn-outline-primary">View Full History</a>
+            </div>
+            <div class="card-body">
+                {% if mood_entries %}
+                <div style="height: 250px">
+                    <canvas id="mood-chart"></canvas>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-line fa-3x mb-3 text-muted"></i>
+                    <h5>No mood data yet</h5>
+                    <p class="text-muted">Start tracking your daily mood to see patterns over time.</p>
+                    <a href="{{ url_for('profile.mood_tracker') }}" class="btn btn-primary">Track Your Mood</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Journal Entries -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Journal Entries</h5>
+                <a href="{{ url_for('profile.journal') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if journal_entries %}
+                <div class="list-group list-group-flush">
+                    {% for entry in journal_entries %}
+                    <a href="{{ url_for('profile.view_journal', entry_id=entry.id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ entry.title }}</h6>
+                            <small class="text-muted">{{ entry.created_at.strftime('%b %d') }}</small>
+                        </div>
+                        <p class="mb-1 text-truncate">{{ entry.content[:100] }}</p>
+                        <small class="text-muted">
+                            <i class="fas {% if entry.is_private %}fa-lock{% else %}fa-globe{% endif %} me-1"></i>
+                            {{ 'Private' if entry.is_private else 'Public' }}
+                        </small>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-book fa-3x mb-3 text-muted"></i>
+                    <h5>No journal entries yet</h5>
+                    <p class="text-muted">Start writing to track your thoughts and feelings.</p>
+                    <a href="{{ url_for('profile.journal') }}" class="btn btn-primary">Create Journal Entry</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Moods -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Moods</h5>
+            </div>
+            <div class="card-body">
+                {% if mood_entries %}
+                <div class="list-group list-group-flush">
+                    {% for entry in mood_entries %}
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="mood-indicator mood-{{ entry.mood_level }} me-3">
+                                {{ entry.mood_level }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">
+                                        {% if entry.mood_level <= 3 %}
+                                        Having a tough day
+                                        {% elif entry.mood_level <= 6 %}
+                                        Feeling okay
+                                        {% else %}
+                                        Feeling great
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ entry.created_at.strftime('%b %d, %I:%M %p') }}</small>
+                                </div>
+                                {% if entry.notes %}
+                                <p class="mb-1">{{ entry.notes|truncate(100) }}</p>
+                                {% endif %}
+                                {% if entry.tags %}
+                                <div class="mt-1">
+                                    {% for tag in entry.tags.split(',') %}
+                                    <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-smile fa-3x mb-3 text-muted"></i>
+                    <h5>No mood entries yet</h5>
+                    <p class="text-muted">Track your daily mood to see your emotional patterns.</p>
+                    <a href="{{ url_for('profile.mood_tracker') }}" class="btn btn-primary">Log Your Mood</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Resources and Recommendations -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Recommendations For You</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('mindfulness.meditation') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-primary bg-opacity-25 p-3 me-3">
+                                <i class="fas fa-brain text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Try a Meditation Session</h6>
+                                <p class="mb-0 text-muted">Take 5 minutes for mindfulness practice</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('mindfulness.breathing') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-secondary bg-opacity-25 p-3 me-3">
+                                <i class="fas fa-wind text-secondary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Breathing Exercises</h6>
+                                <p class="mb-0 text-muted">Quick techniques to reduce stress and anxiety</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('forum.index') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-accent bg-opacity-25 p-3 me-3">
+                                <i class="fas fa-users text-accent"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Connect with Community</h6>
+                                <p class="mb-0 text-muted">Share experiences and find support</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('experts.index') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-warning bg-opacity-25 p-3 me-3">
+                                <i class="fas fa-user-md text-warning"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Expert Q&A Sessions</h6>
+                                <p class="mb-0 text-muted">Get insights from mental health professionals</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if mood_data %}
+    window.moodData = {{ mood_data|tojson|safe }};
+    {% endif %}
+});
+</script>
+<script src="{{ url_for('static', filename='js/mood-tracker.js') }}"></script>
+{% endblock %}

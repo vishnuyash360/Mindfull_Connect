@@ -1,0 +1,122 @@
+{% extends 'layout.html' %}
+
+{% block title %}Report Post - Community Forum{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">Forum</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('forum.view_topic', topic_id=post.topic_id) }}">Back to Topic</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Report Post</li>
+    </ol>
+</nav>
+<h1 class="page-title">Report Post</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Post Content</h5>
+            </div>
+            <div class="card-body">
+                <div class="forum-post">
+                    <div class="forum-post-header">
+                        <div class="forum-post-author">
+                            {{ post.author.display_name }}
+                        </div>
+                        <div class="forum-post-date">
+                            {{ post.created_at.strftime('%b %d, %Y, %I:%M %p') }}
+                        </div>
+                    </div>
+                    <div class="forum-post-content">
+                        {{ post.content|nl2br }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Submit Report</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('forum.report_post', post_id=post.id) }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.reason.label(class="form-label") }}
+                        {% if form.reason.errors %}
+                            {{ form.reason(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.reason.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.reason(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.details.label(class="form-label") }}
+                        {% if form.details.errors %}
+                            {{ form.details(class="form-control is-invalid", rows=5) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.details.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.details(class="form-control", rows=5, placeholder="Please provide additional details to help our moderators understand your concern...") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <p class="mb-0"><i class="fas fa-info-circle me-2"></i> Reports are anonymous and help us maintain a safe, supportive community. Thank you for helping us uphold our community standards.</p>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('forum.view_topic', topic_id=post.topic_id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-warning") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Reporting Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <p>We review all reports to ensure our community remains a safe, supportive space for everyone.</p>
+                
+                <h6 class="mt-3">Valid Reasons to Report</h6>
+                <ul>
+                    <li>Harassment or bullying</li>
+                    <li>Hate speech or discrimination</li>
+                    <li>Personal information sharing</li>
+                    <li>Harmful or dangerous content</li>
+                    <li>Spam or off-topic content</li>
+                    <li>Content that encourages self-harm</li>
+                </ul>
+                
+                <h6 class="mt-3">What Happens After Reporting</h6>
+                <p>Our moderators will review the reported content and take appropriate action, which may include:</p>
+                <ul>
+                    <li>Removing the content</li>
+                    <li>Issuing a warning to the user</li>
+                    <li>Suspending user access if necessary</li>
+                </ul>
+                
+                <p class="mb-0">Thank you for helping us maintain a supportive community.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

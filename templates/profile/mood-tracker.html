@@ -1,0 +1,249 @@
+{% extends 'layout.html' %}
+
+{% block title %}Mood Tracker - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    #mood-level-visualizer {
+        height: 20px;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+    .mood-range {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+    .mood-level {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+    }
+    .mood-level-1, .mood-level-2 { background-color: var(--warning); }
+    .mood-level-3, .mood-level-4 { background-color: var(--warning-light); }
+    .mood-level-5, .mood-level-6 { background-color: var(--accent); }
+    .mood-level-7, .mood-level-8 { background-color: var(--secondary-light); }
+    .mood-level-9, .mood-level-10 { background-color: var(--secondary); }
+    .mood-period-selector {
+        cursor: pointer;
+    }
+    .mood-period-selector.active {
+        font-weight: bold;
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<h1 class="page-title">Mood Tracker</h1>
+<p class="text-muted">Track and visualize your emotional wellbeing over time</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Mood Chart -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Mood History</h5>
+                    <div class="d-flex">
+                        <span class="mood-period-selector me-3 active" data-period="30">30 Days</span>
+                        <span class="mood-period-selector me-3" data-period="90">90 Days</span>
+                        <span class="mood-period-selector" data-period="180">6 Months</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px">
+                    <canvas id="mood-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mood Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Mood Statistics</h5>
+            </div>
+            <div class="card-body" id="mood-statistics">
+                <!-- This will be populated by JavaScript -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Entries -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Entries</h5>
+            </div>
+            <div class="card-body">
+                {% if mood_entries %}
+                <div class="list-group list-group-flush">
+                    {% for entry in mood_entries %}
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="mood-level mood-level-{{ entry.mood_level }} me-3">
+                                {{ entry.mood_level }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">
+                                        {% if entry.mood_level <= 3 %}
+                                        Having a tough day
+                                        {% elif entry.mood_level <= 6 %}
+                                        Feeling okay
+                                        {% else %}
+                                        Feeling great
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ entry.created_at.strftime('%b %d, %I:%M %p') }}</small>
+                                </div>
+                                {% if entry.notes %}
+                                <p class="mb-1">{{ entry.notes }}</p>
+                                {% endif %}
+                                {% if entry.tags %}
+                                <div class="mt-1">
+                                    {% for tag in entry.tags.split(',') %}
+                                    <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="mb-0">No mood entries yet. Start tracking your mood!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Add Mood Entry -->
+        <<div class="card mb-4" style="margin-top: 20px;">
+            <div class="card-header">
+                <h5 class="mb-0">Track Your Mood</h5>
+            </div>
+            <div class="card-body">
+                <form id="mood-form" method="POST" action="{{ url_for('profile.mood_tracker') }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label class="form-label">How are you feeling today?</label>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1">
+                                {{ form.mood_level(class="form-range", min=1, max=10, step=1) }}
+                            </div>
+                            <div class="ms-3 text-center" style="width: 40px; height: 40px; background-color: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                <span id="mood-level-display">5</span>
+                            </div>
+                        </div>
+                        <div id="mood-level-visualizer" style="width: 50%; background-color: var(--primary);"></div>
+                        <div class="mood-range">
+                            <span class="text-danger">Low</span>
+                            <span class="text-success">High</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.notes.label(class="form-label") }}
+                        {% if form.notes.errors %}
+                            {{ form.notes(class="form-control is-invalid", placeholder="What's going on with you today?") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.notes.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.notes(class="form-control", placeholder="What's going on with you today?") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4" id="tags-container">
+                        {{ form.tags.label(class="form-label") }}
+                        {% if form.tags.errors %}
+                            {{ form.tags(class="form-control is-invalid", placeholder="e.g., Work, Family, Exercise") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.tags.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.tags(class="form-control", placeholder="e.g., Work, Family, Exercise") }}
+                        {% endif %}
+                        <small class="form-text text-muted">Separate tags with commas</small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Mood Insights -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Understanding Your Moods</h5>
+            </div>
+            <div class="card-body">
+                <p>Regular mood tracking can help you:</p>
+                <ul>
+                    <li>Identify patterns and triggers</li>
+                    <li>Recognize the impact of daily activities</li>
+                    <li>Track the effectiveness of coping strategies</li>
+                    <li>Share more specific information with healthcare providers</li>
+                </ul>
+                
+                <h6 class="mt-4">Mood Scale Guide</h6>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="mood-level mood-level-2 me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">2</div>
+                    <span>Very low - Significant distress</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="mood-level mood-level-4 me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">4</div>
+                    <span>Low - Struggling but managing</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="mood-level mood-level-6 me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">6</div>
+                    <span>Moderate - Generally okay</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="mood-level mood-level-8 me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">8</div>
+                    <span>High - Feeling good</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="mood-level mood-level-10 me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">10</div>
+                    <span>Very high - Excellent mood</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+window.moodData = {{ mood_data | tojson | safe }};
+console.log(window.moodData);
+</script>
+
+<script src="{{ url_for('static', filename='js/mood-tracker.js') }}"></script>
+
+{% endblock %}

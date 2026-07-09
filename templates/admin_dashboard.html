@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block title %}Admin Dashboard - MindfulConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-primary">Admin Dashboard</h1>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-header fw-bold">Users</div>
+                <div class="card-body">
+                    <span class="display-6">{{ user_count or 0 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-header fw-bold">Experts</div>
+                <div class="card-body">
+                    <span class="display-6">{{ expert_count or 0 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-header fw-bold">Forum Posts</div>
+                <div class="card-body">
+                    <span class="display-6">{{ post_count or 0 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-header fw-bold">Pending Reports</div>
+                <div class="card-body">
+                    <span class="display-6">{{ pending_reports_count or 0 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-header fw-bold">Pending Verifications</div>
+                <div class="card-body">
+                    <span class="display-6">{{ pending_verifications_count or 0 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 d-flex align-items-center">
+            <div class="w-100">
+                <div class="alert alert-info mb-0">
+                    Welcome, <strong>{{ current_user.display_name or current_user.username }}</strong>!<br>
+                    Use the navigation to manage users, experts, reports, and more.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

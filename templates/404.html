@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}Page Not Found - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center py-5">
+            <h1 class="display-1 text-primary">404</h1>
+            <h2 class="mb-4">Page Not Found</h2>
+            
+            <div class="card mb-4">
+                <div class="card-body py-4">
+                    <i class="bi bi-compass fs-1 text-muted mb-3"></i>
+                    <p class="lead">We couldn't find the page you were looking for.</p>
+                    <p class="mb-0">It might have been moved, deleted, or perhaps the URL was mistyped.</p>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-house-fill me-2"></i>Back to Home
+                </a>
+                <a href="{{ url_for('forums.index') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-people-fill me-2"></i>Community Forums
+                </a>
+                <a href="{{ url_for('resources.mindfulness') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-wind me-2"></i>Mindfulness Exercises
+                </a>
+            </div>
+            
+            <div class="mt-5">
+                <p class="text-muted">If you were trying to access a specific feature or need support, you might find it in one of these areas:</p>
+                <div class="row row-cols-2 row-cols-md-4 g-3">
+                    <div class="col">
+                        <a href="{{ url_for('mood.tracker') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-graph-up text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Mood Tracker</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ url_for('mood.journal') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-journal-text text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Journal</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ url_for('experts.sessions') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-mortarboard-fill text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Expert Q&A</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ url_for('chat.index') }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <div class="card-body text-center py-3">
+                                    <i class="bi bi-chat-dots-fill text-primary fs-3"></i>
+                                    <p class="mb-0 mt-2">Chatbot</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

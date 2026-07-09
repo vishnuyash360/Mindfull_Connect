@@ -1,0 +1,262 @@
+{% extends 'layout.html' %}
+
+{% block title %}Schedule Q&A Session - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .time-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .time-option {
+        border: 1px solid #ced4da;
+        border-radius: var(--border-radius);
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .time-option:hover {
+        background-color: var(--primary-light);
+        color: white;
+        border-color: var(--primary-light);
+    }
+    .time-option.selected {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('experts.dashboard') }}">Expert Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Schedule Q&A Session</li>
+    </ol>
+</nav>
+<h1 class="page-title">Schedule Q&A Session</h1>
+<p class="text-muted">Create a new live Q&A session for the community</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Session Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('experts.create_session') }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control", placeholder="E.g., 'Managing Anxiety in Uncertain Times', 'Depression and Self-Care'...") }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Choose a clear, descriptive title that lets the community know what to expect.
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {% if form.description.errors %}
+                            {{ form.description(class="form-control is-invalid", rows=5) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.description(class="form-control", rows=5, placeholder="Provide a detailed description of what this session will cover and who might benefit from attending...") }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Describe the session topics, what attendees will learn, and any specific areas you'll address.
+                        </small>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.scheduled_at.label(class="form-label") }}
+                            {% if form.scheduled_at.errors %}
+                                {{ form.scheduled_at(class="form-control is-invalid datepicker", type="datetime-local") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.scheduled_at.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.scheduled_at(class="form-control datepicker", type="datetime-local") }}
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Select a date and time in the future.
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.duration_minutes.label(class="form-label") }}
+                            {% if form.duration_minutes.errors %}
+                                {{ form.duration_minutes(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.duration_minutes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.duration_minutes(class="form-control") }}
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Recommended: 30-60 minutes.
+                            </small>
+                            
+                            <div class="time-selector">
+                                <div class="time-option" data-minutes="30">30 min</div>
+                                <div class="time-option" data-minutes="45">45 min</div>
+                                <div class="time-option" data-minutes="60">60 min</div>
+                                <div class="time-option" data-minutes="90">90 min</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.max_participants.label(class="form-label") }}
+                        {% if form.max_participants.errors %}
+                            {{ form.max_participants(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.max_participants.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.max_participants(class="form-control") }}
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Limit the number of participants to ensure quality interaction.
+                        </small>
+                    </div>
+                    
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> By scheduling this session, you commit to being available at the specified time. If you need to cancel, please do so at least 24 hours in advance.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('experts.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Tips for Successful Q&A Sessions</h5>
+            </div>
+            <div class="card-body">
+                <h6>Choosing a Topic</h6>
+                <p class="text-muted small">Focus on specific areas of mental health rather than broad topics. This helps attract participants who are genuinely interested in that subject.</p>
+                
+                <h6>Session Description</h6>
+                <p class="text-muted small">Be clear about what you'll cover and what participants can expect to learn. Setting expectations helps ensure a more productive session.</p>
+                
+                <h6>Timing Considerations</h6>
+                <p class="text-muted small">Consider scheduling during evenings or weekends when more community members are likely to be available. Avoid very early or late hours.</p>
+                
+                <h6>Duration</h6>
+                <p class="text-muted small">30-60 minutes is usually optimal. Shorter sessions may feel rushed, while longer ones can lead to fatigue.</p>
+                
+                <h6>Participant Limits</h6>
+                <p class="text-muted small">Smaller groups (10-20 participants) often allow for more meaningful interaction and give everyone a chance to participate.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Popular Topic Ideas</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary text-start topic-suggestion" data-title="Managing Anxiety in Daily Life">
+                        Managing Anxiety in Daily Life
+                    </button>
+                    <button type="button" class="btn btn-outline-primary text-start topic-suggestion" data-title="Depression: Understanding and Coping Strategies">
+                        Depression: Understanding and Coping Strategies
+                    </button>
+                    <button type="button" class="btn btn-outline-primary text-start topic-suggestion" data-title="Stress Management Techniques for Better Mental Health">
+                        Stress Management Techniques for Better Mental Health
+                    </button>
+                    <button type="button" class="btn btn-outline-primary text-start topic-suggestion" data-title="Building Healthy Relationships and Boundaries">
+                        Building Healthy Relationships and Boundaries
+                    </button>
+                    <button type="button" class="btn btn-outline-primary text-start topic-suggestion" data-title="Mindfulness Practices for Emotional Wellbeing">
+                        Mindfulness Practices for Emotional Wellbeing
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle time option selection
+    const timeOptions = document.querySelectorAll('.time-option');
+    const durationInput = document.getElementById('duration_minutes');
+    
+    if (timeOptions.length > 0 && durationInput) {
+        timeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                timeOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Update the input value
+                const minutes = this.dataset.minutes;
+                durationInput.value = minutes;
+            });
+        });
+        
+        // Set initial selection based on input value
+        const initialValue = durationInput.value;
+        if (initialValue) {
+            const matchingOption = document.querySelector(`.time-option[data-minutes="${initialValue}"]`);
+            if (matchingOption) {
+                matchingOption.classList.add('selected');
+            }
+        }
+    }
+    
+    // Handle topic suggestions
+    const topicSuggestions = document.querySelectorAll('.topic-suggestion');
+    const titleInput = document.getElementById('title');
+    
+    if (topicSuggestions.length > 0 && titleInput) {
+        topicSuggestions.forEach(button => {
+            button.addEventListener('click', function() {
+                const title = this.dataset.title;
+                titleInput.value = title;
+                titleInput.focus();
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

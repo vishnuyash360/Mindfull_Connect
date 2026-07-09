@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}Expert Verification - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow mt-5">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Apply for Expert Verification</h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Expert verification</strong> allows mental health professionals to be recognized in our community. 
+                        Your credentials will be reviewed by our administrators before approval.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('auth.expert_verification') }}" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="credentials" class="form-label">{{ form.credentials.label }} <span class="text-danger">*</span></label>
+                            {{ form.credentials(class="form-control", rows=4, id="credentials", placeholder="Describe your professional background, certifications, and experience") }}
+                            <div class="form-text">Include your education, years of experience, and any relevant training.</div>
+                            {% for error in form.credentials.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="license_number" class="form-label">{{ form.license_number.label }} <span class="text-danger">*</span></label>
+                            {{ form.license_number(class="form-control", id="license_number", placeholder="Your professional license number") }}
+                            <div class="form-text">This information will be used for verification purposes only and not displayed publicly.</div>
+                            {% for error in form.license_number.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="specialty" class="form-label">{{ form.specialty.label }} <span class="text-danger">*</span></label>
+                            {{ form.specialty(class="form-control", id="specialty", placeholder="Your area of expertise (e.g., Anxiety, Depression, CBT)") }}
+                            <div class="form-text">This will be displayed on your expert profile to help users find appropriate support.</div>
+                            {% for error in form.specialty.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="alert alert-warning mb-4">
+                            <i class="bi bi-shield-check me-2"></i>
+                            By submitting this form, you agree that:
+                            <ul class="mb-0 mt-2">
+                                <li>All information provided is accurate and can be verified</li>
+                                <li>You will adhere to professional ethical guidelines in all community interactions</li>
+                                <li>You understand that expert status can be revoked for policy violations</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

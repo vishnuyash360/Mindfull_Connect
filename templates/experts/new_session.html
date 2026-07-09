@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Q&A Session - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('experts.sessions') }}">Expert Q&A</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Session</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">Create Q&A Session</h1>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        As a verified expert, you can host Q&A sessions to answer community questions. 
+                        Sessions can be scheduled in advance and made active when you're ready to begin.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('experts.new_session') }}" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+                            {{ form.title(class="form-control", id="title", placeholder="E.g., 'Managing Anxiety: Ask Me Anything'") }}
+                            <div class="form-text">Choose a clear, descriptive title for your session.</div>
+                            {% for error in form.title.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">{{ form.description.label }} <span class="text-danger">*</span></label>
+                            {{ form.description(class="form-control", id="description", rows=4, placeholder="Provide details about the topics you'll cover and your expertise in this area...") }}
+                            <div class="form-text">Describe what community members can expect from your session.</div>
+                            {% for error in form.description.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="scheduled_time" class="form-label">{{ form.scheduled_time.label }} <span class="text-danger">*</span></label>
+                                {{ form.scheduled_time(class="form-control", id="scheduled_time", type="datetime-local") }}
+                                <div class="form-text">When will the session take place? (Your local time)</div>
+                                {% for error in form.scheduled_time.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="duration_minutes" class="form-label">{{ form.duration_minutes.label }} <span class="text-danger">*</span></label>
+                                {{ form.duration_minutes(class="form-control", id="duration_minutes", type="number", min=15, max=180) }}
+                                <div class="form-text">How long will your session last? (15-180 minutes)</div>
+                                {% for error in form.duration_minutes.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="max_participants" class="form-label">{{ form.max_participants.label }} <span class="text-danger">*</span></label>
+                            {{ form.max_participants(class="form-control", id="max_participants", type="number", min=1, max=100) }}
+                            <div class="form-text">Limit the number of participants who can ask questions. (1-100)</div>
+                            {% for error in form.max_participants.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="alert alert-warning mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Expert Guidelines:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Maintain professional boundaries at all times</li>
+                                <li>Do not provide individualized treatment advice</li>
+                                <li>Focus on educational information and general guidance</li>
+                                <li>Refer users to appropriate resources when needed</li>
+                                <li>Report any concerning content to moderators</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('experts.sessions') }}" class="btn btn-outline-secondary">Cancel</a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Format the datetime-local input with current date/time as min value
+        const scheduledTimeInput = document.getElementById('scheduled_time');
+        if (scheduledTimeInput) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            scheduledTimeInput.setAttribute('min', minDateTime);
+        }
+    });
+</script>
+{% endblock %}

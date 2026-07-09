@@ -1,0 +1,242 @@
+{% extends 'layout.html' %}
+
+{% block title %}Expert Dashboard - MindfulConnect{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">Expert Dashboard</h1>
+        <p class="text-muted">Manage your expert profile and Q&A sessions</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="{{ url_for('experts.create_session') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Schedule Q&A Session
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Expert Profile Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">My Expert Profile</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="mx-auto expert-avatar" style="width: 100px; height: 100px; font-size: 3rem;">
+                        {{ current_user.display_name[0]|upper }}
+                    </div>
+                    <h4 class="mt-3">{{ current_user.display_name }}</h4>
+                    <p class="text-muted">{{ expert.specialization }}</p>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <h6>Professional Bio</h6>
+                    <p>{{ expert.bio }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Credentials</h6>
+                    <p>{{ expert.credentials }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Member Since</h6>
+                    <p>{{ current_user.date_joined.strftime('%B %Y') }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Verification Status</h6>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-success me-2">Verified</span>
+                        <small class="text-muted">on {{ expert.verification_date.strftime('%b %d, %Y') if expert.verification_date else 'N/A' }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('experts.view_expert', expert_id=expert.id) }}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-eye me-1"></i> View Public Profile
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Sessions Card -->
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">My Upcoming Q&A Sessions</h5>
+                <a href="{{ url_for('experts.create_session') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-plus-circle me-1"></i> Schedule New
+                </a>
+            </div>
+            <div class="card-body">
+                {% if upcoming_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Date & Time</th>
+                                    <th>Duration</th>
+                                    <th>Participants</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in upcoming_sessions %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('experts.view_session', session_id=session.id) }}">
+                                            {{ session.title|truncate(30) }}
+                                        </a>
+                                    </td>
+                                    <td>{{ session.scheduled_at.strftime('%b %d, %I:%M %p') }}</td>
+                                    <td>{{ session.duration_minutes }} min</td>
+                                    <td>{{ session.max_participants }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('experts.view_session', session_id=session.id) }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('experts.cancel_session', session_id=session.id) }}" class="d-inline">
+                                                <button type="submit" class="btn btn-outline-danger confirm-action" data-confirm="Are you sure you want to cancel this session?">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="far fa-calendar-alt fa-4x text-muted mb-3"></i>
+                        <h5>No Upcoming Sessions</h5>
+                        <p class="text-muted">You don't have any scheduled Q&A sessions.</p>
+                        <a href="{{ url_for('experts.create_session') }}" class="btn btn-primary mt-2">
+                            Schedule Your First Session
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Past Sessions -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Past Q&A Sessions</h5>
+    </div>
+    <div class="card-body">
+        {% if past_sessions %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in past_sessions %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('experts.view_session', session_id=session.id) }}">
+                                    {{ session.title }}
+                                </a>
+                            </td>
+                            <td>{{ session.scheduled_at.strftime('%b %d, %Y, %I:%M %p') }}</td>
+                            <td>{{ session.duration_minutes }} min</td>
+                            <td>
+                                {% if session.is_active %}
+                                <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Cancelled</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> You haven't hosted any Q&A sessions yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Expert Tips Card -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">Tips for Effective Q&A Sessions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="d-flex">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-calendar-alt text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Schedule Strategically</h6>
+                        <p class="text-muted small">Choose times when our community members are most active, typically evenings and weekends.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex">
+                    <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-bullseye text-secondary"></i>
+                    </div>
+                    <div>
+                        <h6>Focus on Specific Topics</h6>
+                        <p class="text-muted small">Sessions with clear, targeted themes tend to attract more engagement.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex">
+                    <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-comments text-accent"></i>
+                    </div>
+                    <div>
+                        <h6>Prepare Key Points</h6>
+                        <p class="text-muted small">Having 3-5 key insights ready helps keep the session flowing and valuable.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Confirm before cancelling a session
+    const confirmButtons = document.querySelectorAll('.confirm-action');
+    
+    confirmButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const message = this.dataset.confirm || 'Are you sure you want to perform this action?';
+            if (!confirm(message)) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

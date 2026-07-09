@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block title %}Create New Topic - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('forums.index') }}">Forums</a></li>
+            <li class="breadcrumb-item active" aria-current="page">New Topic</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">Create New Topic</h1>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('forums.new_topic') }}" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+                            {{ form.title(class="form-control", id="title", placeholder="Enter a clear, descriptive title") }}
+                            <div class="form-text">A good title helps others understand what your topic is about.</div>
+                            {% for error in form.title.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">{{ form.category_id.label }} <span class="text-danger">*</span></label>
+                            {{ form.category_id(class="form-select", id="category_id") }}
+                            {% for error in form.category_id.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">{{ form.content.label }} <span class="text-danger">*</span></label>
+                            {{ form.content(class="form-control", id="content", rows=8, placeholder="Share your thoughts, experiences, or questions...") }}
+                            <div class="form-text">Be as detailed as you feel comfortable. Your post helps others understand and respond.</div>
+                            {% for error in form.content.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.anonymous(class="form-check-input anonymous-toggle", id="anonymous") }}
+                                <label class="form-check-label" for="anonymous">
+                                    {{ form.anonymous.label }}
+                                </label>
+                            </div>
+                            <div class="form-text anonymity-notice d-none">
+                                <i class="bi bi-shield-fill-check text-success me-1"></i>
+                                Your identity will be hidden from other users. Only you and moderators will know you wrote this post.
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-lightbulb-fill me-2"></i>
+                            <strong>Posting Guidelines:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Be respectful and supportive of others</li>
+                                <li>Avoid sharing personally identifiable information</li>
+                                <li>Use content warnings for potentially triggering topics</li>
+                                <li>Remember this is a peer support community, not professional advice</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('forums.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const anonymousCheckbox = document.querySelector('.anonymous-toggle');
+        const anonymityNotice = document.querySelector('.anonymity-notice');
+        
+        if (anonymousCheckbox && anonymityNotice) {
+            anonymousCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    anonymityNotice.classList.remove('d-none');
+                } else {
+                    anonymityNotice.classList.add('d-none');
+                }
+            });
+            
+            // Initialize on page load
+            if (anonymousCheckbox.checked) {
+                anonymityNotice.classList.remove('d-none');
+            }
+        }
+    });
+</script>
+{% endblock %}

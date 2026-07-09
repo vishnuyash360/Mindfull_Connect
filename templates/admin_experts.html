@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block title %}Admin - Expert Verification{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">Expert Verification</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Display Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.display_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_expert %}
+                            <span class="badge bg-success">Verified</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Unverified</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" class="d-inline">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            {% if user.is_expert %}
+                            <button type="submit" name="action" value="unverify"
+                                class="btn btn-sm btn-outline-danger">Unverify</button>
+                            {% else %}
+                            <button type="submit" name="action" value="verify"
+                                class="btn btn-sm btn-outline-primary">Verify</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

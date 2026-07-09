@@ -1,0 +1,279 @@
+{% extends 'layout.html' %}
+
+{% block title %}Gratitude Practice - MindfulConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .gratitude-card {
+        height: 250px;
+        overflow-y: auto;
+    }
+    
+    .gratitude-prompt {
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        background-color: var(--white);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 1.5rem;
+    }
+    
+    .gratitude-exercises .card:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+    }
+    
+    #gratitude-journal-entry {
+        height: 150px;
+        resize: none;
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('mindfulness.index') }}">Mindfulness</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Gratitude Practice</li>
+    </ol>
+</nav>
+<h1 class="page-title">Gratitude Practice</h1>
+<p class="text-muted">Cultivate thankfulness for improved mental wellbeing</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <!-- Intro Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="mb-3">The Power of Gratitude</h3>
+                <p>Gratitude is the practice of noticing and appreciating the positive aspects of life. Research shows that regularly practicing gratitude can significantly improve mental health by:</p>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-brain text-primary"></i>
+                            </div>
+                            <div>
+                                <h6>Enhancing Happiness</h6>
+                                <p class="text-muted small mb-0">Regular gratitude practice can increase happiness by up to 25%.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-heart text-secondary"></i>
+                            </div>
+                            <div>
+                                <h6>Reducing Stress</h6>
+                                <p class="text-muted small mb-0">Focusing on gratitude helps activate the parasympathetic nervous system.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-bed" style="color: var(--accent);"></i>
+                            </div>
+                            <div>
+                                <h6>Improving Sleep</h6>
+                                <p class="text-muted small mb-0">Evening gratitude practice can help you fall asleep faster and sleep better.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-warning bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-users text-warning"></i>
+                            </div>
+                            <div>
+                                <h6>Strengthening Relationships</h6>
+                                <p class="text-muted small mb-0">Expressing gratitude deepens connections with others.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gratitude Journal Card -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Today's Gratitude Journal</h4>
+            </div>
+            <div class="card-body">
+                <p>Take a moment to reflect on what you're grateful for today. Writing down your thoughts helps reinforce positive emotions and creates a record you can look back on during difficult times.</p>
+                
+                <!-- Gratitude Prompt -->
+                <div class="gratitude-prompt bg-light">
+                    <h5 class="mb-3" id="gratitude-prompt-text">What are three things you're grateful for today?</h5>
+                    <button id="new-prompt-btn" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-random me-1"></i> New Prompt
+                    </button>
+                </div>
+                
+                <!-- Gratitude Journal Entry Form -->
+                <form id="gratitude-form">
+                    <div class="mb-3">
+                        <label for="gratitude-journal-entry" class="form-label">Your Reflections</label>
+                        <textarea class="form-control" id="gratitude-journal-entry" placeholder="I am grateful for..."></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-heart me-1"></i> Save to Journal
+                        </button>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('profile.journal') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-book me-1"></i> View Your Journal
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login to Save
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+                
+                <!-- Success Message (hidden by default) -->
+                <div id="success-message" class="alert alert-success mt-3 d-none">
+                    <i class="fas fa-check-circle me-2"></i> Your gratitude entry has been saved!
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Gratitude Exercises Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Simple Gratitude Exercises</h5>
+            </div>
+            <div class="card-body">
+                <div class="gratitude-exercises">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Three Good Things</h5>
+                            <p class="card-text small">Each night, write down three things that went well during the day and reflect on why they happened.</p>
+                            <span class="badge bg-primary">2 minutes daily</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Gratitude Letter</h5>
+                            <p class="card-text small">Write a letter to someone who has positively impacted your life but whom you've never properly thanked.</p>
+                            <span class="badge bg-primary">15 minutes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Mental Subtraction</h5>
+                            <p class="card-text small">Imagine what your life would be like without certain people or things to appreciate their value more deeply.</p>
+                            <span class="badge bg-primary">5 minutes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Gratitude Walk</h5>
+                            <p class="card-text small">Take a 10-minute walk and notice things you're grateful for—nature, your body's ability to move, etc.</p>
+                            <span class="badge bg-primary">10 minutes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Research Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Research on Gratitude</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6>The Science Behind Gratitude</h6>
+                    <p class="small">Research shows that gratitude activates areas in the brain associated with dopamine and serotonin production, neurotransmitters that make us feel good.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h6>Consistency is Key</h6>
+                    <p class="small">Studies suggest that the benefits of gratitude are most pronounced when practiced regularly over time. Even just 2-3 times per week can make a difference.</p>
+                </div>
+                
+                <div>
+                    <h6>Impact on Mental Health</h6>
+                    <p class="small mb-0">Gratitude practices have been shown to reduce symptoms of depression and anxiety while improving overall life satisfaction and resilience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gratitudeForm = document.getElementById('gratitude-form');
+    const gratitudeEntry = document.getElementById('gratitude-journal-entry');
+    const successMessage = document.getElementById('success-message');
+    const promptText = document.getElementById('gratitude-prompt-text');
+    const newPromptBtn = document.getElementById('new-prompt-btn');
+    
+    // Array of gratitude prompts
+    const gratitudePrompts = [
+        "What are three things you're grateful for today?",
+        "What's something someone did for you recently that you appreciate?",
+        "What's something in nature that brings you joy?",
+        "What's something about your body or health that you're thankful for?",
+        "What's a quality in yourself that you're grateful for?",
+        "What's something you're looking forward to?",
+        "What's a lesson from a difficult experience that you now appreciate?",
+        "Who is someone that makes your life better, and why?",
+        "What's a small convenience in your life that you often take for granted?",
+        "What's something you have now that you didn't have a year ago?"
+    ];
+    
+    // Get a random prompt
+    function getRandomPrompt() {
+        const currentPrompt = promptText.textContent;
+        let newPrompt;
+        
+        // Ensure we don't get the same prompt twice in a row
+        do {
+            const randomIndex = Math.floor(Math.random() * gratitudePrompts.length);
+            newPrompt = gratitudePrompts[randomIndex];
+        } while (newPrompt === currentPrompt && gratitudePrompts.length > 1);
+        
+        return newPrompt;
+    }
+    
+    // New prompt button
+    newPromptBtn.addEventListener('click', function() {
+        promptText.textContent = getRandomPrompt();
+    });
+    
+    // Handle form submission
+    gratitudeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (gratitudeEntry.value.trim() === '') {
+            alert('Please write something you're grateful for before saving.');
+            return;
+        }
+        
+        // In a real implementation, this would save to the database
+        // For now, we'll just show a success message
+        successMessage.classList.remove('d-none');
+        
+        // Clear the form after a few seconds (simulating saving)
+        setTimeout(() => {
+            gratitudeEntry.value = '';
+            successMessage.classList.add('d-none');
+            promptText.textContent = getRandomPrompt();
+        }, 3000);
+    });
+});
+</script>
+{% endblock %}

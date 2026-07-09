@@ -1,0 +1,322 @@
+{% extends 'layout.html' %}
+
+{% block title %}Mindfulness Resources - MindfulConnect{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="page-title">Mindfulness Resources</h1>
+        <p class="text-muted">Tools and practices to support your mental wellbeing</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="mb-3">What is Mindfulness?</h2>
+                <p>Mindfulness is the practice of purposefully focusing your attention on the present moment—and accepting it without judgment. It's about being fully engaged with whatever you're doing, free from distraction or judgment, and aware of your thoughts and feelings without getting caught up in them.</p>
+                <p class="mb-4">Research has shown that mindfulness practices can reduce stress, anxiety, and depression while improving focus, emotional regulation, and overall wellbeing.</p>
+                <a href="#mindfulness-tools" class="btn btn-primary">Explore Mindfulness Tools</a>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <svg width="250" height="250" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="125" cy="125" r="120" fill="#F8F9FB" stroke="#5B8EE6" stroke-width="2"></circle>
+                    <circle cx="125" cy="125" r="90" fill="#F8F9FB" stroke="#7BC9A3" stroke-width="2"></circle>
+                    <circle cx="125" cy="125" r="60" fill="#F8F9FB" stroke="#FFB084" stroke-width="2"></circle>
+                    <circle cx="125" cy="125" r="30" fill="#F8F9FB" stroke="#5B8EE6" stroke-width="2"></circle>
+                    <circle cx="125" cy="125" r="10" fill="#5B8EE6"></circle>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mindfulness Tools Section -->
+<h3 id="mindfulness-tools" class="mb-4">Mindfulness Tools</h3>
+
+<div class="row">
+    <!-- Meditation Timer Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-primary bg-opacity-25 mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-brain fa-2x text-primary"></i>
+                </div>
+                <h4>Meditation Timer</h4>
+                <p class="text-muted">A simple timer with ambient sounds to guide your meditation practice.</p>
+                <a href="{{ url_for('mindfulness.meditation') }}" class="btn btn-outline-primary mt-2">Start Meditating</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Breathing Exercises Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-secondary bg-opacity-25 mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-wind fa-2x text-secondary"></i>
+                </div>
+                <h4>Breathing Exercises</h4>
+                <p class="text-muted">Simple breathing techniques to reduce stress and anxiety.</p>
+                <a href="{{ url_for('mindfulness.breathing') }}" class="btn btn-outline-primary mt-2">Practice Breathing</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mindfulness Exercises Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-accent bg-opacity-25 mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-leaf fa-2x" style="color: var(--accent);"></i>
+                </div>
+                <h4>Mindfulness Exercises</h4>
+                <p class="text-muted">Activities to help you stay present and engaged in the moment.</p>
+                <a href="{{ url_for('mindfulness.exercises') }}" class="btn btn-outline-primary mt-2">Try Exercises</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gratitude Practice Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-warning bg-opacity-25 mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-heart fa-2x text-warning"></i>
+                </div>
+                <h4>Gratitude Practice</h4>
+                <p class="text-muted">Cultivate thankfulness and appreciation for positive mental health.</p>
+                <a href="{{ url_for('mindfulness.gratitude') }}" class="btn btn-outline-primary mt-2">Practice Gratitude</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Benefits of Mindfulness Section -->
+<div class="card mt-4 mb-5">
+    <div class="card-header">
+        <h4 class="mb-0">Benefits of Mindfulness</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-flex mb-4">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-brain text-primary"></i>
+                    </div>
+                    <div>
+                        <h5>Mental Health Benefits</h5>
+                        <ul class="mb-0">
+                            <li>Reduces stress, anxiety, and depression</li>
+                            <li>Improves emotional regulation</li>
+                            <li>Enhances self-awareness</li>
+                            <li>Promotes better sleep quality</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="rounded-circle bg-secondary bg-opacity-25 p-2 me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-heartbeat text-secondary"></i>
+                    </div>
+                    <div>
+                        <h5>Physical Health Benefits</h5>
+                        <ul class="mb-0">
+                            <li>Lowers blood pressure</li>
+                            <li>Reduces chronic pain</li>
+                            <li>Improves immune function</li>
+                            <li>Helps manage health conditions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="d-flex mb-4">
+                    <div class="rounded-circle bg-accent bg-opacity-25 p-2 me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-lightbulb" style="color: var(--accent);"></i>
+                    </div>
+                    <div>
+                        <h5>Cognitive Benefits</h5>
+                        <ul class="mb-0">
+                            <li>Enhances focus and concentration</li>
+                            <li>Improves memory and learning</li>
+                            <li>Increases mental clarity</li>
+                            <li>Promotes creative thinking</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="rounded-circle bg-warning bg-opacity-25 p-2 me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users text-warning"></i>
+                    </div>
+                    <div>
+                        <h5>Social Benefits</h5>
+                        <ul class="mb-0">
+                            <li>Enhances relationship satisfaction</li>
+                            <li>Improves communication</li>
+                            <li>Increases empathy and compassion</li>
+                            <li>Reduces social anxiety</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Getting Started Section -->
+<h3 class="mb-4">Getting Started with Mindfulness</h3>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Tips for Beginners</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Start Small</h6>
+                        <p class="text-muted small mb-0">Begin with just 5 minutes of practice daily. It's better to do a short session consistently than longer sessions sporadically.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Be Patient and Kind to Yourself</h6>
+                        <p class="text-muted small mb-0">Mind-wandering is normal. When you notice your attention has drifted, gently bring it back without self-criticism.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Find a Comfortable Position</h6>
+                        <p class="text-muted small mb-0">You don't need to sit cross-legged. Any position that's comfortable and allows you to stay alert works.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check text-primary"></i>
+                    </div>
+                    <div>
+                        <h6>Incorporate Mindfulness Into Daily Activities</h6>
+                        <p class="text-muted small mb-0">Practice while eating, walking, or showering by fully engaging with the sensory experience.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Common Challenges</h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="mindfulnessChallenges">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                "I can't stop my thoughts"
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#mindfulnessChallenges">
+                            <div class="accordion-body">
+                                <p class="mb-0">The goal isn't to stop thinking but to notice thoughts without getting caught up in them. Think of thoughts as clouds passing in the sky—acknowledge them, then let them drift away.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                "I don't have time"
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#mindfulnessChallenges">
+                            <div class="accordion-body">
+                                <p class="mb-0">Even 5 minutes daily can be beneficial. You can also practice informal mindfulness during everyday activities like brushing your teeth, walking, or waiting in line.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                "I feel restless or uncomfortable"
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#mindfulnessChallenges">
+                            <div class="accordion-body">
+                                <p class="mb-0">This is normal, especially for beginners. Try a different position or a walking meditation instead. Sometimes the discomfort itself can become an object of mindful attention.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                "I'm not sure if I'm doing it right"
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#mindfulnessChallenges">
+                            <div class="accordion-body">
+                                <p class="mb-0">If you're noticing your experience—whether it's your breath, bodily sensations, or the fact that your mind is wandering—you're practicing mindfulness. There's no perfect way to do it.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Further Resources Section -->
+<div class="card mt-2">
+    <div class="card-header">
+        <h5 class="mb-0">Further Resources</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h6>Books</h6>
+                <ul class="mb-0">
+                    <li>"Wherever You Go, There You Are" by Jon Kabat-Zinn</li>
+                    <li>"The Miracle of Mindfulness" by Thich Nhat Hanh</li>
+                    <li>"Mindfulness for Beginners" by Jon Kabat-Zinn</li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Apps</h6>
+                <ul class="mb-0">
+                    <li>Headspace</li>
+                    <li>Calm</li>
+                    <li>Insight Timer</li>
+                    <li>Ten Percent Happier</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6>Organizations</h6>
+                <ul class="mb-0">
+                    <li>Center for Mindfulness in Medicine</li>
+                    <li>Mindful.org</li>
+                    <li>UCLA Mindful Awareness Research Center</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin: Content Reports - MindfulSupport{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="my-4">Content Reports</h1>
+            
+            {% if reports %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Pending Reports ({{ reports|length }})</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Reported By</th>
+                                    <th>Date</th>
+                                    <th>Content Type</th>
+                                    <th>Reason</th>
+                                    <th>Content</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                <tr>
+                                    <td>{{ report.reporter.username }}</td>
+                                    <td>{{ report.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if report.content_type == 'post' %}
+                                        Forum Post
+                                        {% elif report.content_type == 'comment' %}
+                                        Comment
+                                        {% else %}
+                                        {{ report.content_type }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#reason-{{ report.id }}" 
+                                                aria-expanded="false">
+                                            View
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#content-{{ report.id }}" 
+                                                aria-expanded="false">
+                                            View
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('forums.process_report', id=report.id, action='dismiss') }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-secondary">Dismiss</button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('forums.process_report', id=report.id, action='remove_content') }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Are you sure you want to remove this content? This action cannot be undone.">Remove</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="reason-{{ report.id }}">
+                                    <td colspan="6" class="bg-light">
+                                        <div class="p-3">
+                                            <h6>Report Reason:</h6>
+                                            <p class="mb-0">{{ report.reason }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="content-{{ report.id }}">
+                                    <td colspan="6" class="bg-light">
+                                        <div class="p-3">
+                                            <h6>Reported Content:</h6>
+                                            <div class="border p-3 rounded bg-white">
+                                                {% if report.content_type == 'post' %}
+                                                    {% set post = post_query.filter_by(id=report.content_id).first() %}
+                                                    {% if post %}
+                                                        <p class="mb-2">
+                                                            <strong>Posted by:</strong> 
+                                                            {{ post.anonymous and 'Anonymous' or post.author.username }}
+                                                        </p>
+                                                        <p class="mb-0">{{ post.content }}</p>
+                                                        <p class="mt-2 mb-0 text-end">
+                                                            <a href="{{ url_for('forums.topic', id=post.topic_id) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                                View in Context
+                                                            </a>
+                                                        </p>
+                                                    {% else %}
+                                                        <p class="text-muted">Content unavailable or already removed</p>
+                                                    {% endif %}
+                                                {% elif report.content_type == 'comment' %}
+                                                    {% set comment = comment_query.filter_by(id=report.content_id).first() %}
+                                                    {% if comment %}
+                                                        <p class="mb-2">
+                                                            <strong>Posted by:</strong> 
+                                                            {{ comment.anonymous and 'Anonymous' or comment.author.username }}
+                                                        </p>
+                                                        <p class="mb-0">{{ comment.content }}</p>
+                                                        <p class="mt-2 mb-0 text-end">
+                                                            <a href="{{ url_for('forums.post', id=comment.post_id) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                                View in Context
+                                                            </a>
+                                                        </p>
+                                                    {% else %}
+                                                        <p class="text-muted">Content unavailable or already removed</p>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <p class="text-muted">Unknown content type</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Report Handling Guidelines:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Review the full context before taking action</li>
+                    <li>Consider the intent behind the content</li>
+                    <li>Dismiss reports that don't violate community guidelines</li>
+                    <li>Remove content that is harmful, threatening, or violates our policies</li>
+                    <li>Follow up with users who repeatedly post concerning content</li>
+                </ul>
+            </div>
+            
+            {% else %}
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                There are no pending content reports at this time.
+            </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
