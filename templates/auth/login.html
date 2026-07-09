@@ -91,25 +91,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Password visibility toggle
-        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-        
-        togglePasswordButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const passwordField = document.querySelector(this.getAttribute('data-target'));
-                
-                if (passwordField.type === 'password') {
-                    passwordField.type = 'text';
-                    this.innerHTML = '<i class="fa fa-eye-slash"></i>';
-                } else {
-                    passwordField.type = 'password';
-                    this.innerHTML = '<i class="fa fa-eye"></i>';
-                }
-            });
-        });
-    });
-</script>
-{% endblock %}
+
