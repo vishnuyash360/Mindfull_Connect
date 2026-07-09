@@ -112,12 +112,12 @@
                         </div>
                     </div>
 <div class="mb-3">
-                        <div class="form-check">
+                        <!--<div class="form-check">
                             {{ form.is_admin(class="form-check-input", id="register_admin") }}
                             <label class="form-check-label" for="register_admin">
                                 Register as Admin
                             </label>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <div class="d-grid gap-2">
@@ -224,23 +224,7 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Password visibility toggle
-        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-        
-        togglePasswordButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const passwordField = document.querySelector(this.getAttribute('data-target'));
-                
-                if (passwordField.type === 'password') {
-                    passwordField.type = 'text';
-                    this.innerHTML = '<i class="fa fa-eye-slash"></i>';
-                } else {
-                    passwordField.type = 'password';
-                    this.innerHTML = '<i class="fa fa-eye"></i>';
-                }
-            });
-        });
+    
         
         // Form submission validation
         const form = document.querySelector('form');
