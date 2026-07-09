@@ -110,7 +110,3 @@ PGHOST=localhost
 PGPORT=5432
 SESSION_SECRET=your_secret_key_here
 ```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
